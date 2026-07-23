@@ -217,7 +217,6 @@ async function load() {
     if(candSelect){
       candSelect.innerHTML = '';
       if(latestCache.length){
-        candSelect.appendChild(new Option('-- 请选择 --', ''));
         latestCache.forEach(x => {
           const opt = document.createElement('option');
           opt.value = (x.title||'').replace(/"/g,'&quot;');
@@ -228,7 +227,7 @@ async function load() {
         candSelect.appendChild(new Option('未采集到数据', ''));
       }
     }
-    if(document.getElementById('chartCandidate').value){
+    if(candSelect && candSelect.value){
       await drawChart();
     }
   } catch(e) {
