@@ -209,7 +209,6 @@ async function load() {
     statsCache = stats || {};
     document.getElementById('s_count').textContent = fmt(statsCache.count);
     document.getElementById('s_max').textContent = fmt(statsCache.max_votes);
-    document.getElementById('s_min').textContent = fmt(statsCache.min_votes);
     document.getElementById('s_candidates').textContent = fmt(statsCache.candidates);
     document.getElementById('s_latest').textContent = statsCache.latest_capture ? dateFmt(statsCache.latest_capture) : '-';
 
