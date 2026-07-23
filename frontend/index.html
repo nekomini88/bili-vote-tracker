@@ -181,8 +181,8 @@ async function load() {
     if(!latestCache.length){
       tb.innerHTML = '<tr><td colspan="9" class="empty">暂无数据</td></tr>';
     } else {
-      latestCache.sort((a,b)=> (b.votes||0)-(a.votes||0));
-      tb.innerHTML = latestCache.map((x,idx)=> `<tr>
+      const sorted = latestCache.slice().sort((a,b)=> (b.votes||0)-(a.votes||0));
+      tb.innerHTML = sorted.map((x,idx)=> `<tr>
         <td>${idx+1}</td>
         <td><b>${x.title||''}</b></td>
         <td><b class="kpi-blue">${fmt(x.votes)}</b></td>
@@ -193,9 +193,9 @@ async function load() {
         <td class="muted" id="d24h_${idx}">-</td>
         <td>${dateFmt(x.captured_at)}</td>
       </tr>`).join('');
-      for(let i=0;i<latestCache.length;i++){
+      for(let i=0;i<sorted.length;i++){
         try{
-          const x = latestCache[i];
+          const x = sorted[i];
           const j = await api(`/api/diff?title=${encodeURIComponent(x.title)}`);
           const update = (id, v) => { const el = document.getElementById(id); if(el) el.innerHTML = v; };
           update(`d1m_${i}`, fmtDelta((j && j.intervals && j.intervals['1m'] ? j.intervals['1m'].delta : null)));
