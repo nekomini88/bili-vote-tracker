@@ -214,37 +214,40 @@ async function load() {
         <td>${dateFmt(x.captured_at)}</td>
       </tr>`).join('');
       for(let i=0;i<latestCache.length;i++){
-        try{
-          const x = latestCache[i];
+        (async (idx)=>{
+          const x = latestCache[idx];
           const j = await api(`/api/diff?title=${encodeURIComponent(x.title)}`);
-          const update = (id, v) => { const el = document.getElementById(id); if(el) el.innerHTML = v; };
-          update(`d1m_${i}`, fmtDelta((j && j.intervals && j.intervals['1m'] ? j.intervals['1m'].delta : null)));
-          update(`d5m_${i}`, fmtDelta((j && j.intervals && j.intervals['5m'] ? j.intervals['5m'].delta : null)));
-          update(`d30m_${i}`, fmtDelta((j && j.intervals && j.intervals['30m'] ? j.intervals['30m'].delta : null)));
-          update(`d6h_${i}`, fmtDelta((j && j.intervals && j.intervals['6h'] ? j.intervals['6h'].delta : null)));
-          update(`d24h_${i}`, fmtDelta((j && j.intervals && j.intervals['24h'] ? j.intervals['24h'].delta : null)));
-        }catch(e){}
+          const iv = (j && j.intervals) || {};
+          const setText = (id, v) => { const el = document.getElementById(id); if(!el) return; el.innerHTML = v === undefined || v === null ? '-' : ((v>0?'+':'')+String(v)); };
+          setText(`d1m_${idx}`, iv['1m'] ? iv['1m'].delta : undefined);
+          setText(`d5m_${idx}`, iv['5m'] ? iv['5m'].delta : undefined);
+          setText(`d30m_${idx}`, iv['30m'] ? iv['30m'].delta : undefined);
+          setText(`d6h_${idx}`, iv['6h'] ? iv['6h'].delta : undefined);
+          setText(`d24h_${idx}`, iv['24h'] ? iv['24h'].delta : undefined);
+        })(i);
       }
-    }
     statsCache = stats || {};
     document.getElementById('s_count').textContent = fmt(statsCache.count);
     document.getElementById('s_max').textContent = fmt(statsCache.max_votes);
-    document.getElementById('s_min').textContent = fmt(statsCache.min_votes);
     document.getElementById('s_candidates').textContent = fmt(statsCache.candidates);
     document.getElementById('s_latest').textContent = statsCache.latest_capture ? dateFmt(statsCache.latest_capture) : '-';
     const candSelect = document.getElementById('chartCandidate');
     if(candSelect){
       candSelect.innerHTML = '';
-      candSelect.appendChild(new Option('- 下拉选择候选人 -', ''));
-      (latestCache.length ? latestCache : [{title:'迪迦奥特曼'},{title:'梦比优斯奥特曼'},{title:'雷欧奥特曼'},{title:'捷德奥特曼'},{title:'盖亚奥特曼'},{title:'戴拿奥特曼'},{title:'欧布奥特曼'},{title:'银河奥特曼'},{title:'布莱泽奥特曼'},{title:'奈克赛斯奥特曼'},{title:'赛罗奥特曼'},{title:'泽塔奥特曼'},{title:'艾克斯奥特曼'},{title:'泰迦奥特曼'},{title:'希卡利奥特曼'},{title:'提欧奥特曼'},{title:'高斯奥特曼'},{title:'特利迦奥特曼'},{title:'阿古茹奥特曼'},{title:'麦克斯奥特曼'}]).forEach(x => {
+      const list = latestCache.slice().sort((a,b)=> (b.votes||0)-(a.votes||0));
+      list.forEach(x => {
+        const t = (x.title || '').trim();
+        if(!t) return;
         const opt = document.createElement('option');
-        opt.value = (x.title||'').replace(/"/g,'&quot;');
-        opt.textContent = x.title || '匿名';
+        opt.value = t;
+        opt.textContent = t;
         candSelect.appendChild(opt);
       });
+      if(candSelect.options.length > 0) candSelect.selectedIndex = 0;
     }
-    if(candSelect && candSelect.value){
-      await drawChart();
+    const currentTitle = candSelect ? candSelect.value : '';
+    if(currentTitle){
+      await drawChart(currentTitle);
     }
   } catch(e) {
     console.error('load failed', e);
