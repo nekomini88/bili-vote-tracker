@@ -89,7 +89,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
       <div class="candidate-wrap">
         <label for="chartCandidate">候选人：</label>
         <select id="chartCandidate" onchange="onCandChange()">
-          <option value="">-- 请选择候选人 --</option>
+          <option value="">- 加载中 -</option>
         </select>
       </div>
       <span class="muted chart-hint" id="chartHint">请选择候选人</span>
@@ -209,45 +209,27 @@ async function load() {
     statsCache = stats || {};
     document.getElementById('s_count').textContent = fmt(statsCache.count);
     document.getElementById('s_max').textContent = fmt(statsCache.max_votes);
+    document.getElementById('s_min').textContent = fmt(statsCache.min_votes);
     document.getElementById('s_candidates').textContent = fmt(statsCache.candidates);
     document.getElementById('s_latest').textContent = statsCache.latest_capture ? dateFmt(statsCache.latest_capture) : '-';
 
     const candSelect = document.getElementById('chartCandidate');
     if(candSelect){
       candSelect.innerHTML = '';
-      const list = (latestCache.length ? latestCache : []).slice().sort((a,b)=> (b.votes||0)-(a.votes||0));
-      if(list.length){
+      if(latestCache.length){
         candSelect.appendChild(new Option('-- 请选择 --', ''));
-        list.forEach(x => {
-          const t = (x.title||'匿名').trim();
+        latestCache.forEach(x => {
           const opt = document.createElement('option');
-          opt.value = t; opt.textContent = t;
+          opt.value = (x.title||'').replace(/"/g,'&quot;');
+          opt.textContent = x.title || '匿名';
           candSelect.appendChild(opt);
         });
       } else {
         candSelect.appendChild(new Option('未采集到数据', ''));
       }
     }
-    if(candSelect && candSelect.value){
-      await drawChart(candSelect.value);
-    }
-
-    // fallback：若上面仍为空，直接请求 latest 填充下拉框
-    if(candSelect && !candSelect.options.length){
-      try{
-        const fb = await api('/api/latest');
-        if(Array.isArray(fb) && fb.length){
-          candSelect.innerHTML = '';
-          fb.slice().sort((a,b)=> (b.votes||0)-(a.votes||0)).forEach(x => {
-            const t = (x.title||'匿名').trim();
-            const opt = document.createElement('option');
-            opt.value = t; opt.textContent = t;
-            candSelect.appendChild(opt);
-          });
-          if(candSelect.options.length) candSelect.selectedIndex = 0;
-          await drawChart(candSelect.value);
-        }
-      }catch(e){ console.error('fallback load failed', e); }
+    if(document.getElementById('chartCandidate').value){
+      await drawChart();
     }
   } catch(e) {
     console.error('load failed', e);
@@ -258,9 +240,8 @@ function fmtDelta(v){
   if(v === null || v === undefined) return '-';
   const n = Number(v);
   if(!Number.isFinite(n)) return '-';
-  if(n === 0 || Object.is(n, -0)) return '<span class="delta-flat">0</span>';
   const sign = n > 0 ? '+' : '';
-  const cls = n > 0 ? 'delta-up' : 'delta-down';
+  const cls = n > 0 ? 'delta-up' : n < 0 ? 'delta-down' : 'delta-flat';
   return `<span class="${cls}">${sign}${fmt(n)}</span>`;
 }
 
