@@ -337,7 +337,7 @@ async function drawChart(){
       ctx.fillText('数据点不足（至少2条），继续采集后即可生成趋势', 60, h/2);
     }
     tbody.innerHTML = points.slice().reverse().map((p,i)=>{
-      const prev = i < points.length - 1 ? points[points.length - 1 - i].votes : null;
+      const prev = i < points.length - 1 ? points[points.length - 2 - i].votes : null;
       const delta = prev !== null ? p.votes - prev : null;
       const deltaStr = delta !== null ? ((delta>=0?'+':'')+fmt(delta)) : '-';
       const deltaClass = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
