@@ -215,20 +215,39 @@ async function load() {
     const candSelect = document.getElementById('chartCandidate');
     if(candSelect){
       candSelect.innerHTML = '';
-      if(latestCache.length){
+      const list = (latestCache.length ? latestCache : []).slice().sort((a,b)=> (b.votes||0)-(a.votes||0));
+      if(list.length){
         candSelect.appendChild(new Option('-- 请选择 --', ''));
-        latestCache.forEach(x => {
+        list.forEach(x => {
+          const t = (x.title||'匿名').trim();
           const opt = document.createElement('option');
-          opt.value = (x.title||'').replace(/"/g,'&quot;');
-          opt.textContent = x.title || '匿名';
+          opt.value = t; opt.textContent = t;
           candSelect.appendChild(opt);
         });
       } else {
         candSelect.appendChild(new Option('未采集到数据', ''));
       }
     }
-    if(document.getElementById('chartCandidate').value){
-      await drawChart();
+    if(candSelect && candSelect.value){
+      await drawChart(candSelect.value);
+    }
+
+    // fallback：若上面仍为空，直接请求 latest 填充下拉框
+    if(candSelect && !candSelect.options.length){
+      try{
+        const fb = await api('/api/latest');
+        if(Array.isArray(fb) && fb.length){
+          candSelect.innerHTML = '';
+          fb.slice().sort((a,b)=> (b.votes||0)-(a.votes||0)).forEach(x => {
+            const t = (x.title||'匿名').trim();
+            const opt = document.createElement('option');
+            opt.value = t; opt.textContent = t;
+            candSelect.appendChild(opt);
+          });
+          if(candSelect.options.length) candSelect.selectedIndex = 0;
+          await drawChart(candSelect.value);
+        }
+      }catch(e){ console.error('fallback load failed', e); }
     }
   } catch(e) {
     console.error('load failed', e);
