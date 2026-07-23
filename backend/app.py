@@ -186,9 +186,9 @@ def latest():
 @app.get("/api/history")
 def history(title: str, limit: int = 300):
     with sqlite3.connect(DB_PATH) as con:
-        cur = con.execute("SELECT captured_at, votes FROM vote_records WHERE title=? ORDER BY captured_at ASC LIMIT ?", (title, limit))
+        cur = con.execute("SELECT captured_at, votes FROM vote_records WHERE title=? ORDER BY captured_at DESC LIMIT ?", (title, limit))
         rows = cur.fetchall()
-    return [{"captured_at": r[0], "votes": r[1]} for r in rows]
+    return [{"captured_at": r[0], "votes": r[1]} for r in rows[::-1]]
 
 @app.get("/api/diff")
 def diff(title: str):
