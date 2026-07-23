@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bili Vote Tracker</title>
+<style>
+:root{color-scheme:light;--bg:#f7f8fa;--card:#fff;--line:#e5e7eb;--ink:#303133;--muted:#606266;--accent:#409eff;--ok:#67c23a;--warn:#e6a23c;--danger:#f56c6c;--shadow:0 2px 12px rgba(0,0,0,.06);--r:10px}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(1200px 800px at 10% -10%,rgba(64,158,255,.12),transparent),radial-gradient(1200px 800px at 90% 10%,rgba(230,162,60,.10),transparent),var(--bg);min-height:100vh}
+.app{max-width:1280px;margin:0 auto;padding:24px 14px 64px}
+header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 18px;flex-wrap:wrap;gap:10px}
+header h1{font-size:22px;font-weight:700;margin:0;letter-spacing:.2px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:9px 14px;border:none;border-radius:8px;color:#fff;background:var(--accent);cursor:pointer;font-size:14px;transition:filter .2s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+.stat .label{font-size:12px;color:var(--muted)}
+.stat .value{font-size:22px;font-weight:700;margin-top:6px}
+.kpi-green{color:var(--ok)}.kpi-blue{color:var(--accent)}.kpi-orange{color:var(--warn)}.kpi-red{color:var(--danger)}
+.table-wrap{overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:18px}
+table{width:100%;border-collapse:collapse;min-width:1100px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);color:var(--muted);font-size:14px;vertical-align:top;white-space:nowrap}
+th{color:var(--ink);font-weight:600;background:#fafafa;position:sticky;top:0}
+tbody tr:hover{background:#f5f7fa}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:18px}
+.chart-header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.empty{text-align:center;padding:24px;color:var(--muted)}
+.muted{color:var(--muted)}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tab-desc{font-size:11px;opacity:.85}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
+.modal{background:#fff;border-radius:12px;padding:18px;width:min(420px,92vw);box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.modal h3{margin:0 0 12px}
+.modal .field{margin-bottom:10px}
+.delta-up{color:var(--danger)}.delta-down{color:var(--ok)}.delta-flat{color:var(--muted)}
+.hidden{display:none !important}
+
+.candidate-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.candidate-wrap label{font-size:13px;color:var(--muted)}
+.candidate-wrap select{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink);font-size:14px;min-width:180px;cursor:pointer}
+.chart-hint{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>📊 Bili Vote Tracker</h1>
+    <div class="toolbar">
+      <button class="btn" id="btnTrigger" onclick="openAdmin()">管理后台</button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="card stat"><div class="label">候选人</div><div class="value" id="s_candidates">0</div></div>
+    <div class="card stat"><div class="label">总采集数</div><div class="value kpi-blue" id="s_count">0</div></div>
+    <div class="card stat"><div class="label">最高票数</div><div class="value kpi-orange" id="s_max">0</div></div>
+    <div class="card stat"><div class="label">最近采集</div><div class="value kpi-green" id="s_latest">-</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>候选人</th>
+          <th>当前票数</th>
+          <th title="与1分钟前相比">1分钟差</th>
+          <th title="与5分钟前相比">5分钟差</th>
+          <th title="与30分钟前相比">30分钟差</th>
+          <th title="与6小时前相比">6小时差</th>
+          <th title="与24小时前相比">24小时差</th>
+          <th>最近采集时间 (UTC+8)</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="chart">
+    <div class="chart-header">
+      <h3 style="margin:0">📈 统计图表</h3>
+      <div class="candidate-wrap">
+        <label for="chartCandidate">候选人：</label>
+        <select id="chartCandidate" onchange="onCandChange()">
+          <option value="">- 加载中 -</option>
+        </select>
+      </div>
+      <span class="muted chart-hint" id="chartHint">请选择候选人</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="setChartMode('trend', this)">📈 趋势线<span class="tab-desc">随时间的票数走势</span></button>
+      <button class="tab" onclick="setChartMode('bar', this)">📊 票数对比<span class="tab-desc">当前各候选人票数对比</span></button>
+      <button class="tab" onclick="setChartMode('delta', this)">📉 增量柱状<span class="tab-desc">每轮采集的票数增量</span></button>
+    </div>
+    <canvas id="chartCanvas" height="260" style="width:100%;background:#fff;border:1px solid var(--line);border-radius:8px"></canvas>
+    <div style="margin-top:8px">
+      <table>
+        <thead>
+          <tr><th>#</th><th>采集时间</th><th>票数</th><th>环比增量</th></tr>
+        </thead>
+        <tbody id="chartRows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer>power by NekoMini</footer>
+
+<div class="modal-backdrop" id="adminModal">
+  <div class="modal">
+    <h3>🔐 管理员后台</h3>
+    <div class="field">
+      <label>账号</label>
+      <input id="adUser" type="text" />
+    </div>
+    <div class="field">
+      <label>密码</label>
+      <input id="adPass" type="password" />
+    </div>
+    <div class="field" style="display:flex;gap:8px;align-items:center">
+      <button class="btn" id="adSave" onclick="adminSave()">登录并加载配置</button>
+      <button class="btn btn-ghost" onclick="closeAdmin()">关闭</button>
+      <span class="muted" id="adStatus" style="margin-left:6px"></span>
+    </div>
+    <div id="adSettings" class="hidden" style="margin-top:10px">
+      <div class="field">
+        <label>目标页面</label>
+        <input id="cfgUrl" placeholder="https://b23.tv/..." />
+      </div>
+      <div class="field">
+        <label>采集间隔</label>
+        <select id="cfgPreset" onchange="onPreset()">
+          <option value="1">每 1 分钟</option>
+          <option value="5">每 5 分钟</option>
+          <option value="10">每 10 分钟</option>
+          <option value="30">每 30 分钟</option>
+          <option value="custom">自定义</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>自定义间隔（分钟）</label>
+        <input id="cfgCustom" type="number" min="1" max="1440" value="1" />
+      </div>
+      <div class="field" style="display:flex;gap:8px;align-items:center">
+        <button class="btn" onclick="adminSaveConfig()">应用配置</button>
+        <span class="muted" id="cfgStatus" style="margin-left:6px"></span>
+      </div>
+      <div class="muted" style="margin-top:6px;font-size:12px">保存后将立即生效。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const fmt = n => Number(n||0).toLocaleString();
+const dateFmt = s => s ? new Date(s).toLocaleString() : '-';
+let chartMode = 'trend';
+let latestCache = [];
+let statsCache = {};
+
+function api(path, opts={}) {
+  return fetch(path, opts).then(r => r.json()).catch(e => ({error: e.message}));
+}
+
+async function load() {
+  try {
+    const [latest, stats] = await Promise.all([
+      api('/api/latest'),
+      api('/api/stats')
+    ]).catch(e => ({latest: [], stats: {}}));
+
+    latestCache = Array.isArray(latest) ? latest : [];
+
+    const tb = document.getElementById('rows');
+    if(!latestCache.length){
+      tb.innerHTML = '<tr><td colspan="9" class="empty">暂无数据</td></tr>';
+    } else {
+      latestCache.sort((a,b)=> (b.votes||0)-(a.votes||0));
+      tb.innerHTML = latestCache.map((x,idx)=> `<tr>
+        <td>${idx+1}</td>
+        <td><b>${x.title||''}</b></td>
+        <td><b class="kpi-blue">${fmt(x.votes)}</b></td>
+        <td class="muted" id="d1m_${idx}">-</td>
+        <td class="muted" id="d5m_${idx}">-</td>
+        <td class="muted" id="d30m_${idx}">-</td>
+        <td class="muted" id="d6h_${idx}">-</td>
+        <td class="muted" id="d24h_${idx}">-</td>
+        <td>${dateFmt(x.captured_at)}</td>
+      </tr>`).join('');
+      for(let i=0;i<latestCache.length;i++){
+        try{
+          const x = latestCache[i];
+          const j = await api(`/api/diff?title=${encodeURIComponent(x.title)}`);
+          const update = (id, v) => { const el = document.getElementById(id); if(el) el.innerHTML = v; };
+          update(`d1m_${i}`, fmtDelta((j && j.intervals && j.intervals['1m'] ? j.intervals['1m'].delta : null)));
+          update(`d5m_${i}`, fmtDelta((j && j.intervals && j.intervals['5m'] ? j.intervals['5m'].delta : null)));
+          update(`d30m_${i}`, fmtDelta((j && j.intervals && j.intervals['30m'] ? j.intervals['30m'].delta : null)));
+          update(`d6h_${i}`, fmtDelta((j && j.intervals && j.intervals['6h'] ? j.intervals['6h'].delta : null)));
+          update(`d24h_${i}`, fmtDelta((j && j.intervals && j.intervals['24h'] ? j.intervals['24h'].delta : null)));
+        }catch(e){}
+      }
+    }
+    statsCache = stats || {};
+    document.getElementById('s_count').textContent = fmt(statsCache.count);
+    document.getElementById('s_max').textContent = fmt(statsCache.max_votes);
+    document.getElementById('s_min').textContent = fmt(statsCache.min_votes);
+    document.getElementById('s_candidates').textContent = fmt(statsCache.candidates);
+    document.getElementById('s_latest').textContent = statsCache.latest_capture ? dateFmt(statsCache.latest_capture) : '-';
+
+    const candSelect = document.getElementById('chartCandidate');
+    if(candSelect){
+      candSelect.innerHTML = '';
+      if(latestCache.length){
+        candSelect.appendChild(new Option('-- 请选择 --', ''));
+        latestCache.forEach(x => {
+          const opt = document.createElement('option');
+          opt.value = (x.title||'').replace(/"/g,'&quot;');
+          opt.textContent = x.title || '匿名';
+          candSelect.appendChild(opt);
+        });
+      } else {
+        candSelect.appendChild(new Option('未采集到数据', ''));
+      }
+    }
+    if(document.getElementById('chartCandidate').value){
+      await drawChart();
+    }
+  } catch(e) {
+    console.error('load failed', e);
+  }
+}
+
+function fmtDelta(v){
+  if(v === null || v === undefined) return '-';
+  const n = Number(v);
+  if(!Number.isFinite(n)) return '-';
+  const sign = n > 0 ? '+' : '';
+  const cls = n > 0 ? 'delta-up' : n < 0 ? 'delta-down' : 'delta-flat';
+  return `<span class="${cls}">${sign}${fmt(n)}</span>`;
+}
+
+function onCandChange(){
+  drawChart();
+}
+
+function setChartMode(mode, el){
+  chartMode = mode;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  drawChart();
+}
+
+async function drawChart(){
+  try{
+    const candSelect = document.getElementById('chartCandidate');
+    const title = candSelect ? candSelect.value : '';
+    const tbody = document.getElementById('chartRows');
+    const canvas = document.getElementById('chartCanvas');
+    const ctx = canvas.getContext('2d');
+    document.getElementById('chartHint').textContent = title ? `候选人：${title}` : '请选择候选人';
+    if(!title){
+      if(tbody) tbody.innerHTML='';
+      const w = canvas.clientWidth || 900; const h = canvas.clientHeight || 260;
+      canvas.width = w; canvas.height = h;
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+      ctx.fillStyle='#909399'; ctx.font='14px sans-serif';
+      ctx.fillText('请先在顶部下拉框选择候选人', 60, h/2);
+      return;
+    }
+    const q = `/api/history?title=${encodeURIComponent(title)}&limit=300`;
+    const hist = await api(q).catch(()=> ({}));
+    const points = (Array.isArray(hist) ? hist : []).slice(-80);
+    const w = canvas.clientWidth || 900; const h = canvas.clientHeight || 260;
+    canvas.width = w; canvas.height = h;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+    for(let i=0;i<=5;i++){ const y=Math.round(i*(h-40)/5)+20; ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(w-10,y);ctx.stroke(); }
+    if(chartMode === 'bar' && points.length){
+      const votes = points.map(p=>p.votes);
+      const max = Math.max(...votes); const min = Math.min(...votes);
+      const pad=60; const plotW=w-90; const plotH=h-70;
+      const bw = Math.max(6, plotW / points.length - 2);
+      points.forEach((p,i)=>{
+        const x = pad + (i/(points.length||1))*plotW;
+        const bh = ((p.votes-min)/(max-min||1))*plotH;
+        const y = 20+plotH-bh;
+        ctx.fillStyle = 'rgba(64,158,255,0.85)';
+        ctx.fillRect(x,y,bw,bh);
+        if(points.length < 20 || i % Math.ceil(points.length/20) === 0){
+          ctx.fillStyle='#606266'; ctx.font='10px sans-serif';
+          ctx.fillText(new Date(p.captured_at).toLocaleTimeString(), x, 20+plotH+14);
+        }
+      });
+      ctx.fillStyle='#303133'; ctx.font='12px sans-serif';
+      ctx.fillText(max.toLocaleString(), 6, 30);
+      ctx.fillText(min.toLocaleString(), 6, h-20);
+    } else if(chartMode === 'delta' && points.length >= 2){
+      const deltas = points.slice(1).map((p,i)=> p.votes - points[i].votes);
+      const max = Math.max(...deltas,0); const min = Math.min(...deltas,0);
+      const pad=60; const plotW=w-90; const plotH=h-70;
+      const bw = Math.max(6, plotW / deltas.length - 2);
+      deltas.forEach((d,i)=>{
+        const x = pad + (i/(deltas.length||1))*plotW;
+        const bh = (Math.abs(d)/(Math.max(max,Math.abs(min))||1))*plotH;
+        const y = d>=0 ? 20+plotH/2-bh : 20+plotH/2;
+        ctx.fillStyle = d>=0 ? 'rgba(245,108,108,0.85)' : 'rgba(103,194,58,0.85)';
+        ctx.fillRect(x,y,bw,bh);
+      });
+      ctx.fillStyle='#303133'; ctx.font='12px sans-serif';
+      ctx.fillText(`+${fmt(max)}`, 6, 30);
+      ctx.fillText(`${fmt(min)}`, 6, h-20);
+      ctx.fillText('0', 20, 20+plotH/2+6);
+    } else if(points.length >= 2){
+      const votes = points.map(p=>p.votes);
+      const mn = Math.min(...votes); const mx = Math.max(...votes);
+      const pad = 20; const plotW = w-60; const plotH = h-70;
+      const xFor = i => 50 + (i/(points.length-1))*plotW;
+      const yFor = v => 20 + plotH - ((v-mn)/(mx-mn||1))*plotH;
+      ctx.beginPath(); ctx.strokeStyle = '#409eff'; ctx.lineWidth = 2;
+      points.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+      ctx.stroke();
+      ctx.beginPath(); ctx.fillStyle = 'rgba(64,158,255,0.15)';
+      points.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); i?ctx.lineTo(x,y):ctx.moveTo(x,y); ctx.lineTo(x,yFor(p.votes)); ctx.lineTo(x,20+plotH); });
+      ctx.closePath(); ctx.fill();
+      points.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fillStyle='#409eff'; ctx.fill(); });
+      ctx.fillStyle='#303133'; ctx.font='12px sans-serif';
+      ctx.fillText(mx.toLocaleString(), 6, yFor(mx)+4);
+      ctx.fillText(mn.toLocaleString(), 6, yFor(mn)+4);
+    } else {
+      ctx.fillStyle = '#909399'; ctx.font = '14px sans-serif';
+      ctx.fillText('数据点不足（至少2条），继续采集后即可生成趋势', 60, h/2);
+    }
+    tbody.innerHTML = points.slice().reverse().map((p,i)=>{
+      const prev = i < points.length - 1 ? points[points.length - 1 - i].votes : null;
+      const delta = prev !== null ? p.votes - prev : null;
+      const deltaStr = delta !== null ? ((delta>=0?'+':'')+fmt(delta)) : '-';
+      const deltaClass = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
+      return `<tr><td>${i+1}</td><td>${dateFmt(p.captured_at)}</td><td><b>${fmt(p.votes)}</b></td><td class="${deltaClass}">${deltaStr}</td></tr>`;
+    }).join('');
+  }catch(e){
+    console.error('drawChart failed', e);
+  }
+}
+
+function openAdmin(){ document.getElementById('adminModal').style.display='flex'; }
+function closeAdmin(){ document.getElementById('adminModal').style.display='none'; }
+async function adminSave(){
+  try{
+    const user = document.getElementById('adUser').value;
+    const pass = document.getElementById('adPass').value;
+    const payload = {
+      target_url: document.getElementById('cfgUrl').value.trim(),
+      poll_interval: Number(document.getElementById('cfgCustom').value || 1)
+    };
+    const r = await fetch('/api/config', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Basic '+btoa(user+':'+pass)}, body: JSON.stringify(payload)});
+    const j = await r.json();
+    document.getElementById('adStatus').textContent = j.ok ? '已保存，配置立即生效' : '保存失败，检查账号密码';
+    if(j.ok){
+      document.getElementById('adSettings').classList.remove('hidden');
+      setTimeout(load, 600);
+      setTimeout(() => drawChart(), 800);
+    }
+  }catch(e){
+    document.getElementById('adStatus').textContent = '登录失败';
+    console.error(e);
+  }
+}
+function onPreset(){
+  const v = document.getElementById('cfgPreset').value;
+  if(v==='custom'){ document.getElementById('cfgCustom').value='1'; document.getElementById('cfgCustom').focus(); } else { document.getElementById('cfgCustom').value=v; }
+}
+
+window.addEventListener('error', e => console.error('PAGE_ERROR', e.message, e.filename, e.lineno));
+window.addEventListener('unhandledrejection', e => console.error('UNHANDLED_REJECTION', e.reason));
+window.addEventListener('resize', drawChart);
+load();
+setInterval(load, 1000*30);
+</script>
+</body>
+</html>

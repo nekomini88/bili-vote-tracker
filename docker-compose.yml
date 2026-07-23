@@ -1,0 +1,12 @@
+services:
+  tracker:
+    build: .
+    ports:
+      - "9008:9008"
+    environment:
+      - PORT=9008
+      - TARGET_URL=https://b23.tv/wDz5Xnc
+      - DB_PATH=/app/db/votes.db
+    restart: unless-stopped
+    volumes:
+      - ./db:/app/db
