@@ -270,7 +270,7 @@ _CACHE_GEO = {"ts": 0, "data": {}}
 _SUCCESS_RESPONSE = {"ok": True}
 
 @app.get("/api/my-info")
-def my_info(request: fastapi.Request):
+def my_info(request: Request):
     ip = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip() or (request.client.host if request.client else "")
     ip = (ip or "").strip()
     now = int(time.time())
