@@ -268,6 +268,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
   </div>
 </div>
 
+<script src="avatar_map.js"></script>
 <script>
 const fmt = n => Number(n||0).toLocaleString();
 const dateFmt = s => s ? new Date(s).toLocaleString() : '-';
@@ -289,7 +290,8 @@ const addAvatarHtml = (title)=>{
   const i = CANDIDATE_ORDER.indexOf(title||'');
   const n = (i >= 0 ? i+1 : (title.charCodeAt(0)||0) % 20 + 1);
   const num = String(n).padStart(2,'0');
-  const src = `assets/heroes/ultraman_${num}.png`;
+  const map = (typeof window !== 'undefined' && window.__ULTRAMAN_AVATARS__) || {};
+  const src = map[`ultraman_${num}`] || `assets/heroes/ultraman_${num}.png`;
   const fallback = `<span style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#409eff,#0D8ABC);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${title?title[0]:''}</span>`;
   const esc = fallback.replace(/'/g,"&apos;").replace(/"/g,"&quot;");
   return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:#f3f4f6;object-fit:cover;border:1px solid #ddd" onerror="this.outerHTML='${esc}'">`;
