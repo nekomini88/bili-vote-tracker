@@ -17,18 +17,29 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang 
 .glass-orb-1{width:50vw;height:50vh;top:-10%;left:-5%;background:#0089c966}
 .glass-orb-2{width:40vw;height:45vh;bottom:-5%;right:-5%;background:#00a88359}
 .glass-orb-3{width:35vw;height:35vh;top:30%;left:40%;background:#b37ed84d}
-[data-theme="midnight"] .glass-orb-1{background:#003f60}
-[data-theme="midnight"] .glass-orb-2{background:#00363a}
-[data-theme="midnight"] .glass-orb-3{background:#13284b}
-[data-theme="ruby"] .glass-orb-1{background:#f43f5e}
-[data-theme="ruby"] .glass-orb-2{background:#fb7185;opacity:.35}
-[data-theme="ruby"] .glass-orb-3{background:#e11d48;opacity:.3}
-[data-theme="gold"] .glass-orb-1{background:#f59e0b;opacity:.4}
-[data-theme="gold"] .glass-orb-2{background:#fbbf24;opacity:.35}
-[data-theme="gold"] .glass-orb-3{background:#d97706;opacity:.35}
-[data-theme="ocean"] .glass-orb-1{background:#0284c7;opacity:.45}
-[data-theme="ocean"] .glass-orb-2{background:#06b6d4;opacity:.4}
-[data-theme="ocean"] .glass-orb-3{background:#0ea5e9;opacity:.35}
+.dark .glass-orb-1{background:#003f60}
+.dark .glass-orb-2{background:#00363a}
+.dark .glass-orb-3{background:#13284b}
+.dark{color-scheme:dark}
+.dark .app{background:rgba(15,23,42,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.dark header h1{color:#e2e8f0}
+.dark .toolbar .btn{background:#1e293b;border-color:#334155;color:#e2e8f0}
+.dark select{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
+.dark .chart{background:rgba(30,41,59,.6);border-color:#334155;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.dark .tabs .tab{background:#1e293b;border-color:#334155;color:#94a3b8}
+.dark .tabs .tab.active{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.dark table{color:#e2e8f0}
+.dark thead{background:rgba(30,41,59,.8);color:#94a3b8}
+.dark tbody tr:nth-child(even){background:rgba(255,255,255,.04)}
+.dark tbody tr:hover{background:rgba(59,130,246,.15)}
+.dark td{border-color:#1e293b}
+.dark footer{color:#94a3b8}
+.dark #geoLines span{color:#cbd5e1!important}
+.dark .empty{color:#64748b}
+.dark .modal-backdrop{background:rgba(0,0,0,.6)}
+.dark .modal{background:#0f172a;border-color:#334155;color:#e2e8f0}
+.dark input[type=password],.dark input[type=text]{background:#1e293b;border-color:#334155;color:#e2e8f0}
+.dark input[type=checkbox]{accent-color:#3b82f6}
 @keyframes orb-float{0%{transform:translate(0) scale(1)}50%{transform:translate(8%,12%) scale(1.1)}to{transform:translate(-5%,8%) scale(.95)}}
 .app{max-width:1280px;margin:0 auto;padding:24px 14px 64px}
 header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 18px;flex-wrap:wrap;gap:10px}
@@ -94,6 +105,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
         <option value="material-pink">Pink</option>
         <option value="material-teal">Teal</option>
       </select>
+      <button class="btn" onclick="toggleDayNight()" id="dnBtn" title="切换白天/夜晚">🌓</button>
       <button class="btn" id="btnTrigger" onclick="openAdmin()">管理后台</button>
     </div>
   </header>
@@ -529,14 +541,35 @@ function setTheme(name){
   document.documentElement.setAttribute('data-theme', name);
   const el = document.getElementById('themeSelect');
   if(el) el.value = name;
-  try{ localStorage.setItem('bvt-theme', name); }catch(e){}
+  try{ localStorage.setItem('theme', name); }catch(e){}
+}
+function toggleDayNight(){
+  const root = document.documentElement;
+  const isDark = root.classList.contains('dark');
+  if(isDark){
+    root.classList.remove('dark');
+    try{ localStorage.setItem('daynight','light'); }catch(e){}
+    const btn = document.getElementById('dnBtn');
+    if(btn) btn.textContent = '🌙';
+  }else{
+    root.classList.add('dark');
+    try{ localStorage.setItem('daynight','dark'); }catch(e){}
+    const btn = document.getElementById('dnBtn');
+    if(btn) btn.textContent = '☀️';
+  }
 }
 (function(){
   try{
-    const saved = localStorage.getItem('bvt-theme');
-    const preferred = ['emerald','midnight','ruby','gold','ocean'].includes(saved) ? saved : 'emerald';
+    const saved = localStorage.getItem('theme');
+    const preferred = ['emerald','midnight','ruby','gold','ocean','sunrise','green-mountain','blue-water','night','material-indigo','material-pink','material-teal'].includes(saved) ? saved : 'emerald';
     setTheme(preferred);
   }catch(e){ setTheme('emerald'); }
+  try{
+    const dn = localStorage.getItem('daynight');
+    const root = document.documentElement;
+    if(dn === 'dark'){ root.classList.add('dark'); const btn = document.getElementById('dnBtn'); if(btn) btn.textContent = '☀️'; }
+    else{ root.classList.remove('dark'); const btn = document.getElementById('dnBtn'); if(btn) btn.textContent = '🌙'; }
+  }catch(e){ const btn = document.getElementById('dnBtn'); if(btn) btn.textContent = '🌙'; }
 })();
 </script>
 </body>
