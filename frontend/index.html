@@ -144,8 +144,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
         <option value="material-teal">Teal</option>
       </select>
       <button class="btn" onclick="toggleDayNight()" id="dnBtn" title="切换白天/夜晚">🌓</button>
-      <button class="btn btn-bubble" id="bellBtn" onclick="showBubbleToast()" title="通知">
-        🔔
+      <button class="btn btn-bubble" id="bellBtn" onclick="this.classList.toggle('active')" title="快捷操作">
+        ⚡
       </button>
       <button class="btn" id="btnTrigger" onclick="openAdmin()">管理后台</button>
     </div>
@@ -291,7 +291,8 @@ const addAvatarHtml = (title)=>{
   const num = String(n).padStart(2,'0');
   const src = `assets/heroes/ultraman_${num}.png`;
   const fallback = `<span style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#409eff,#0D8ABC);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${title?title[0]:''}</span>`;
-  return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:#f3f4f6;object-fit:cover;border:1px solid #ddd" onerror="this.outerHTML='${fallback.replace(/'/g,"&apos;")}'">`;
+  const esc = fallback.replace(/'/g,"&apos;").replace(/"/g,"&quot;");
+  return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:#f3f4f6;object-fit:cover;border:1px solid #ddd" onerror="this.outerHTML='${esc}'">`;
 };
 
 function api(path, opts={}) {
