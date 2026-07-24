@@ -311,7 +311,8 @@ async function drawChart(){
       q = `/api/history?title=${encodeURIComponent(title)}&limit=300`;
     }
     const hist = await api(q).catch(()=> ({}));
-    const points = (Array.isArray(hist) ? hist : []).slice(-80);
+    const points = Array.isArray(hist) ? hist : [];
+    const canvasPoints = points.length > 200 ? points.filter((_,i)=> i % Math.ceil(points.length/200) === 0 || i === points.length-1) : points.slice();
     const w = canvas.clientWidth || 900; const h = canvas.clientHeight || 260;
     canvas.width = w; canvas.height = h;
     ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
