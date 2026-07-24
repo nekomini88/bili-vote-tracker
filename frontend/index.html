@@ -282,12 +282,13 @@ const rankIndex = (title) => {
   return i >= 0 ? i : CANDIDATE_ORDER.length;
 };
 const rankSort = (a,b) => rankIndex(a.title||'') - rankIndex(b.title||'');
-const heroImg = (title, votes)=>{
+const addAvatarHtml = (title)=>{
   const i = CANDIDATE_ORDER.indexOf(title||'');
-  if(i < 0) return `<span style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#409eff,#0D8ABC);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${title?title[0]:''}</span>`;
-  const n = String(i+1).padStart(2,'0');
-  const src = `assets/heroes/ultraman_${n}.png`;
-  return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;object-fit:cover;background:#f3f4f6" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect width=%2240%22 height=%2240%22 fill=%22%23e0f2fe%22/><text x=%2250%25%22 y=%2254%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%230284c7%22 font-size=%2218%22>${encodeURIComponent(title?title[0]:'')}</text></svg>'">`;
+  const n = (i >= 0 ? i+1 : (title.charCodeAt(0)||0) % 20 + 1);
+  const num = String(n).padStart(2,'0');
+  const src = `assets/heroes/ultraman_${num}.png`;
+  const fallback = `<span style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#409eff,#0D8ABC);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${title?title[0]:''}</span>`;
+  return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:#f3f4f6;object-fit:cover;border:1px solid #ddd" onerror="this.outerHTML='${fallback.replace(/'/g,"&apos;")}'">`;
 };
 
 function api(path, opts={}) {
@@ -357,7 +358,7 @@ async function load() {
     } else {
       tb.innerHTML = latestCache.slice().sort(rankSort).map((x,idx)=> `<tr>
         <td>${idx+1}</td>
-        <td>${heroImg(x.title)}<b>${x.title||''}</b></td>
+        <td>${addAvatarHtml(x.title)}<b>${x.title||''}</b></td>
         <td><b class="kpi-blue">${fmt(x.votes)}</b></td>
         <td class="muted" id="d1m_${idx}">-</td>
         <td class="muted" id="d5m_${idx}">-</td>
@@ -477,7 +478,8 @@ async function drawChart(){
     const canvasPoints = points.length > 200 ? points.filter((_,i)=> i % Math.ceil(points.length/200) === 0 || i === points.length-1) : points.slice();
     const w = canvas.clientWidth || 900; const h = canvas.clientHeight || 260;
     canvas.width = w; canvas.height = h;
-    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#fff';
+    ctx.fillRect(0,0,w,h);
     ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
     for(let i=0;i<=5;i++){ const y=Math.round(i*(h-40)/5)+20; ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(w-10,y);ctx.stroke(); }
     if(chartMode === 'bar' && canvasPoints.length){
@@ -548,9 +550,9 @@ async function drawChart(){
       const deltaClass = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
       return `<tr><td>${i+1}</td><td>${dateFmt(p.captured_at)}</td><td><b>${fmt(p.votes)}</b></td><td class="${deltaClass}">${deltaStr}</td></tr>`;
     }).join('');
-  }catch(e){
+    }catch(e){
     console.error('drawChart failed', e);
-  }
+    }
 }
 
 function openAdmin(){ document.getElementById('adminModal').style.display='flex'; }
