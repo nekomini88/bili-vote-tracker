@@ -280,7 +280,7 @@ async function renderGeoFooter(){
   }catch(e){}
   const render = () => {
     const countryCode = j.country_code || '';
-    const countryName = j.country || '';
+    const countryName = j.country_name || '';
     const city = j.city || '';
     const ip = j.ip || '';
     const browser = detectBrowser();
