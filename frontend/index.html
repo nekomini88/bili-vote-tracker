@@ -21,25 +21,46 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang 
 .dark .glass-orb-2{background:#00363a}
 .dark .glass-orb-3{background:#13284b}
 .dark{color-scheme:dark}
-.dark .app{background:rgba(15,23,42,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.dark header h1{color:#e2e8f0}
-.dark .toolbar .btn{background:#1e293b;border-color:#334155;color:#e2e8f0}
-.dark select{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
-.dark .chart{background:rgba(30,41,59,.6);border-color:#334155;box-shadow:0 10px 40px rgba(0,0,0,.4)}
-.dark .tabs .tab{background:#1e293b;border-color:#334155;color:#94a3b8}
+.dark *{scrollbar-color:#475569 transparent}
+.dark ::-webkit-scrollbar{width:10px}
+.dark ::-webkit-scrollbar-track{background:transparent}
+.dark ::-webkit-scrollbar-thumb{background:#475569;border-radius:999px}
+.dark .app{background:rgba(15,23,42,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#e2e8f0}
+.dark header{border-color:#334155}
+.dark header h1{color:#f1f5f9}
+.dark header h1 .sub{color:#94a3b8}
+.dark header .toolbar{grid-gap:8px;gap:8px}
+.dark header .toolbar .btn{background:#1e293b;border:1px solid #334155;color:#e2e8f0;box-shadow:0 2px 0 #0f172a}
+.dark header .toolbar .btn:hover{background:#334155;border-color:#475569}
+.dark header .toolbar .btn:active{transform:translateY(2px);box-shadow:none}
+.dark .logo-wrap{filter:drop-shadow(0 0 8px rgba(59,130,246,.35))}
+.dark .sticky-sub{background:rgba(15,23,42,.85);border-bottom:1px solid #334155;color:#94a3b8;backdrop-filter:blur(10px)}
+.dark .sticky-sub .btn{background:#1e293b;border-color:#334155;color:#e2e8f0}
+.dark .sticky-sub .btn.active{background:#3b82f6;border-color:#3b82f6;color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.35)}
+.dark .candidate-wrap label{color:#94a3b8}
+.dark .candidate-wrap select{background:#1e293b!important;border:1px solid #334155!important;color:#e2e8f0!important}
+.dark .candidate-wrap select option{background:#0f172a;color:#e2e8f0}
+.dark input[type=datetime-local],.dark input[type=date]{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
+.dark input[type=checkbox]{accent-color:#3b82f6}
+.dark .chart{background:rgba(30,41,59,.55);border:1px solid #334155;box-shadow:0 10px 40px rgba(0,0,0,.5);color:#e2e8f0}
+.dark .chart-canvas{background:#0f172a}
+.dark .tabs .tab{background:#1e293b;border:1px solid #334155;color:#94a3b8}
 .dark .tabs .tab.active{background:#3b82f6;border-color:#3b82f6;color:#fff}
-.dark table{color:#e2e8f0}
-.dark thead{background:rgba(30,41,59,.8);color:#94a3b8}
-.dark tbody tr:nth-child(even){background:rgba(255,255,255,.04)}
+.dark table{color:#e2e8f0;border-color:#1e293b}
+.dark thead{background:rgba(30,41,59,.85);color:#94a3b8;border-color:#334155}
+.dark tbody tr:nth-child(even){background:rgba(255,255,255,.03)}
 .dark tbody tr:hover{background:rgba(59,130,246,.15)}
 .dark td{border-color:#1e293b}
-.dark footer{color:#94a3b8}
+.dark th{border-color:#334155}
+.dark footer{color:#94a3b8;border-top-color:#334155}
 .dark #geoLines span{color:#cbd5e1!important}
 .dark .empty{color:#64748b}
-.dark .modal-backdrop{background:rgba(0,0,0,.6)}
-.dark .modal{background:#0f172a;border-color:#334155;color:#e2e8f0}
-.dark input[type=password],.dark input[type=text]{background:#1e293b;border-color:#334155;color:#e2e8f0}
-.dark input[type=checkbox]{accent-color:#3b82f6}
+.dark .modal-backdrop{background:rgba(0,0,0,.7)}
+.dark .modal{background:#0f172a;border:1px solid #334155;color:#e2e8f0}
+.dark .modal input,.dark .modal label{color:#e2e8f0}
+.dark input[type=password],.dark input[type=text]{background:#1e293b;border:1px solid #334155;color:#e2e8f0}
+.dark .btn-bubble::after{background:#b91c1c;box-shadow:0 2px 8px rgba(185,28,28,.45)}
+.dark #dnBtn{background:#b45309;border-color:#92400e;color:#fff}
 @keyframes orb-float{0%{transform:translate(0) scale(1)}50%{transform:translate(8%,12%) scale(1.1)}to{transform:translate(-5%,8%) scale(.95)}}
 .app{max-width:1280px;margin:0 auto;padding:24px 14px 64px}
 header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 18px;flex-wrap:wrap;gap:10px}
@@ -602,3 +623,4 @@ function showBubbleToast(){}
 </script>
 </body>
 </html>
+<!-- DEBUG_UNIQUE_TAG_789 -->
