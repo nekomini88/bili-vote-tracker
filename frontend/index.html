@@ -156,7 +156,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
     </table>
   </div>
 
-  <div id="chartArea" style="display:none">
+  <div id="chartArea">
     <div class="chart">
     <div class="chart-header">
       <h3 style="margin:0">📈 统计图表</h3>
@@ -264,6 +264,13 @@ const rankIndex = (title) => {
   return i >= 0 ? i : CANDIDATE_ORDER.length;
 };
 const rankSort = (a,b) => rankIndex(a.title||'') - rankIndex(b.title||'');
+const heroImg = (title)=>{
+  const i = CANDIDATE_ORDER.indexOf(title||'');
+  if(i < 0) return '';
+  const n = String(i+1).padStart(2,'0');
+  const src = `assets/heroes/ultraman_${n}.png`;
+  return `<img src="${src}" alt="${title}" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;object-fit:cover">`;
+};
 
 function api(path, opts={}) {
   return fetch(path, opts).then(r => r.json()).catch(e => ({error: e.message}));
@@ -332,7 +339,7 @@ async function load() {
     } else {
       tb.innerHTML = latestCache.slice().sort(rankSort).map((x,idx)=> `<tr>
         <td>${idx+1}</td>
-        <td><b>${x.title||''}</b></td>
+        <td>${heroImg(x.title)}<b>${x.title||''}</b></td>
         <td><b class="kpi-blue">${fmt(x.votes)}</b></td>
         <td class="muted" id="d1m_${idx}">-</td>
         <td class="muted" id="d5m_${idx}">-</td>
