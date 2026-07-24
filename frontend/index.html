@@ -550,9 +550,10 @@ async function drawChart(){
       const deltaClass = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
       return `<tr><td>${i+1}</td><td>${dateFmt(p.captured_at)}</td><td><b>${fmt(p.votes)}</b></td><td class="${deltaClass}">${deltaStr}</td></tr>`;
     }).join('');
-    }catch(e){
-    console.error('drawChart failed', e);
     }
+  }catch(e){
+    console.error('drawChart failed', e);
+  }
 }
 
 function openAdmin(){ document.getElementById('adminModal').style.display='flex'; }
