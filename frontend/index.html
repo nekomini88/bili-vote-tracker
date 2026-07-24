@@ -116,7 +116,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
   </div>
 </div>
 
-<footer id="geoFooter" style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px;line-height:1.8">power by NekoMini 2026</footer>
+<footer id="geoFooter" style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px;line-height:1.8">
+  <div id="geoLines">
+    <div style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap"><span>🌍</span><span>loading...</span></div>
+  </div>
+</footer>
 
 <div class="modal-backdrop" id="adminModal">
   <div class="modal">
@@ -185,22 +189,24 @@ function api(path, opts={}) {
 }
 
 async function renderGeoFooter(){
+  const el = document.getElementById('geoLines');
+  if(!el) return;
+  el.innerHTML = '<div style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap"><span>🌍</span><span>loading...</span></div>';
+  let j = {};
   try{
-    let j = {};
-    try{
-      const r = await fetch('https://ipapi.co/json/', {signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined});
-      if(r.ok) j = await r.json();
-    }catch(e){}
-    const parts = [];
-    if(j.country_name && j.city) parts.push(`${j.country_name} · ${j.city}`);
-    else if(j.country_name) parts.push(j.country_name);
-    if(j.ip) parts.push(j.ip);
-    const browser = detectBrowser();
-    if(browser) parts.push(browser);
-    const el = document.getElementById('geoFooter');
-    if(!el) return;
-    el.textContent = parts.length ? parts.join(' · ') : 'power by NekoMini 2026';
+    const r = await fetch('https://ipapi.co/json/', {signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined});
+    if(r.ok) j = await r.json();
   }catch(e){}
+  const parts = [];
+  if(j.country_name && j.city) parts.push(`${j.country_name} · ${j.city}`);
+  else if(j.country_name) parts.push(j.country_name);
+  if(j.ip) parts.push(j.ip);
+  const browser = detectBrowser();
+  if(browser) parts.push(browser);
+  if(!parts.length) parts.push('power by NekoMini 2026');
+  const left = parts.slice(0, parts.length - 1).join(' · ');
+  const right = parts[parts.length - 1];
+  el.innerHTML = `<div style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap"><span>🌍</span><span>${left}</span><span style="opacity:.75">${right}</span></div>`;
 }
 function detectBrowser(){
   const ua = navigator.userAgent || '';
@@ -447,6 +453,7 @@ function onPreset(){
 window.addEventListener('error', e => console.error('PAGE_ERROR', e.message, e.filename, e.lineno));
 window.addEventListener('unhandledrejection', e => console.error('UNHANDLED_REJECTION', e.reason));
 window.addEventListener('resize', drawChart);
+renderGeoFooter();
 load();
 setInterval(load, 1000*30);
 </script>
