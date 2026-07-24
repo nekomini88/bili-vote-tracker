@@ -98,6 +98,14 @@ def fetch_votes(url: str):
             set_meta("activity_id", aid)
             set_meta("group_id", group)
             set_meta("vote_id", vote)
+        # persist to local sqlite for history/range queries
+        try:
+            with sqlite3.connect(DB_PATH) as con:
+                now = datetime.now(UTC8).isoformat()
+                con.executemany("INSERT INTO vote_records(captured_at, title, votes, item_id, is_my_vote) VALUES(?,?,?,?,?)",
+                    [(now, row["title"], row["votes"], row["item_id"], row["is_vote"]) for row in out])
+        except Exception:
+            pass
         return out
     except Exception as e:
         print("[fetch] exception:", e)
@@ -189,6 +197,22 @@ def history(title: str, limit: int = 300):
         cur = con.execute("SELECT captured_at, votes FROM vote_records WHERE title=? ORDER BY captured_at DESC LIMIT ?", (title, limit))
         rows = cur.fetchall()
     return [{"captured_at": r[0], "votes": r[1]} for r in rows[::-1]]
+
+@app.get("/api/range")
+def range(title: str, start: str = '', end: str = ''):
+    sql = "SELECT captured_at, votes FROM vote_records WHERE title=?"
+    args = [title]
+    if start:
+        sql += " AND captured_at >= ?"
+        args.append(start)
+    if end:
+        sql += " AND captured_at <= ?"
+        args.append(end)
+    sql += " ORDER BY captured_at ASC"
+    with sqlite3.connect(DB_PATH) as con:
+        cur = con.execute(sql, args)
+        rows = cur.fetchall()
+    return [{"captured_at": r[0], "votes": r[1]} for r in rows]
 
 @app.get("/api/diff")
 def diff(title: str):

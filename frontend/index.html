@@ -93,6 +93,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
         </select>
       </div>
       <span class="muted chart-hint" id="chartHint">请选择候选人</span>
+      <label style="font-size:13px;color:var(--muted);margin-left:8px;display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="rangeMode" onchange="drawChart()"> 按时间段查询
+      </label>
+      <input type="datetime-local" id="rangeStart" onchange="onRangeChange()">
+      <input type="datetime-local" id="rangeEnd" onchange="onRangeChange()">
     </div>
     <div class="tabs">
       <button class="tab active" onclick="setChartMode('trend', this)">📈 趋势线<span class="tab-desc">随时间的票数走势</span></button>
@@ -259,6 +264,10 @@ function onCandChange(){
   drawChart();
 }
 
+function onRangeChange(){
+  drawChart();
+}
+
 function setChartMode(mode, el){
   chartMode = mode;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -283,7 +292,24 @@ async function drawChart(){
       ctx.fillText('请先在顶部下拉框选择候选人', 60, h/2);
       return;
     }
-    const q = `/api/history?title=${encodeURIComponent(title)}&limit=300`;
+    const useRange = document.getElementById('rangeMode') && document.getElementById('rangeMode').checked;
+    let q;
+    if(useRange){
+      let rs = document.getElementById('rangeStart').value;
+      let re = document.getElementById('rangeEnd').value;
+      if(!rs || !re){
+        const meta = statsCache || {};
+        if(!rs && meta.first_capture) rs = meta.first_capture.slice(0,16);
+        if(!re && meta.latest_capture) re = meta.latest_capture.slice(0,16);
+        if(rs) document.getElementById('rangeStart').value = rs;
+        if(re) document.getElementById('rangeEnd').value = re;
+      }
+      q = `/api/range?title=${encodeURIComponent(title)}`;
+      if(rs) q += `&start=${encodeURIComponent(new Date(rs).toISOString())}`;
+      if(re) q += `&end=${encodeURIComponent(new Date(re).toISOString())}`;
+    } else {
+      q = `/api/history?title=${encodeURIComponent(title)}&limit=300`;
+    }
     const hist = await api(q).catch(()=> ({}));
     const points = (Array.isArray(hist) ? hist : []).slice(-80);
     const w = canvas.clientWidth || 900; const h = canvas.clientHeight || 260;
