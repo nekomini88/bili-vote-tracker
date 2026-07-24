@@ -116,7 +116,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
   </div>
 </div>
 
-<footer>power by NekoMini 2026</footer>
+<footer id="geoFooter" style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px;line-height:1.8">power by NekoMini 2026</footer>
 
 <div class="modal-backdrop" id="adminModal">
   <div class="modal">
@@ -184,6 +184,32 @@ function api(path, opts={}) {
   return fetch(path, opts).then(r => r.json()).catch(e => ({error: e.message}));
 }
 
+async function renderGeoFooter(){
+  try{
+    const j = await fetch('/api/my-info').then(r=>r.json()).catch(()=>({}));
+    const parts = [];
+    if(j && j.country && j.city) parts.push(`${j.country} · ${j.city}`);
+    else if(j && j.country) parts.push(j.country);
+    if(j && j.ip) parts.push(j.ip);
+    const browser = detectBrowser();
+    if(browser) parts.push(browser);
+    const el = document.getElementById('geoFooter');
+    if(!el) return;
+    el.textContent = parts.length ? parts.join(' · ') : 'power by NekoMini 2026';
+  }catch(e){}
+}
+function detectBrowser(){
+  const ua = navigator.userAgent || '';
+  const data = navigator.userAgentData?.brands || [];
+  const chrome = data.find(b => /Chrome|Chromium|Edge|Opera/.test(b.brand));
+  if(chrome && /Edg/.test(ua)) return 'Edge';
+  if(chrome && /OPR|Opera/.test(ua)) return 'Opera';
+  if(chrome && /Chrome|Chromium/.test(ua)) return 'Chrome';
+  if(/Firefox/.test(ua)) return 'Firefox';
+  if(/Safari/.test(ua) && !/Chrome/.test(ua)) return 'Safari';
+  if(/MSIE|Trident/.test(ua)) return 'IE';
+  return '';
+}
 async function load() {
   try {
     const [latest, stats] = await Promise.all([
@@ -245,6 +271,7 @@ async function load() {
     if(document.getElementById('chartCandidate').value){
       await drawChart();
     }
+    renderGeoFooter();
   } catch(e) {
     console.error('load failed', e);
   }
