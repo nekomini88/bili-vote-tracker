@@ -98,14 +98,7 @@ def fetch_votes(url: str):
             set_meta("activity_id", aid)
             set_meta("group_id", group)
             set_meta("vote_id", vote)
-        # persist to local sqlite for history/range queries
-        try:
-            with sqlite3.connect(DB_PATH) as con:
-                now = datetime.now(UTC8).isoformat()
-                con.executemany("INSERT INTO vote_records(captured_at, title, votes, item_id, is_my_vote) VALUES(?,?,?,?,?)",
-                    [(now, row["title"], row["votes"], row["item_id"], row["is_vote"]) for row in out])
-        except Exception:
-            pass
+        # poll_and_save persists after fetch_votes returns
         return out
     except Exception as e:
         print("[fetch] exception:", e)
@@ -119,7 +112,7 @@ def poll_and_save():
     now = datetime.now(UTC8).isoformat()
     with sqlite3.connect(DB_PATH) as con:
         for row in rows:
-            con.execute("INSERT INTO vote_records(captured_at, title, votes, item_id, is_my_vote) VALUES(?,?,?,?,?)",
+            con.execute("INSERT OR IGNORE INTO vote_records(captured_at, title, votes, item_id, is_my_vote) VALUES(?,?,?,?,?)",
                 (now, row["title"], row["votes"], row["item_id"], row["is_vote"]))
     print(f"[poll] saved {len(rows)} candidates at {now}")
 
@@ -196,7 +189,14 @@ def history(title: str, limit: int = 300):
     with sqlite3.connect(DB_PATH) as con:
         cur = con.execute("SELECT captured_at, votes FROM vote_records WHERE title=? ORDER BY captured_at DESC LIMIT ?", (title, limit))
         rows = cur.fetchall()
-    return [{"captured_at": r[0], "votes": r[1]} for r in rows[::-1]]
+    rows = rows[::-1]
+    deduped = []
+    seen = set()
+    for r in rows:
+        if r[0] not in seen:
+            seen.add(r[0])
+            deduped.append(r)
+    return [{"captured_at": r[0], "votes": r[1]} for r in deduped]
 
 @app.get("/api/range")
 def range(title: str, start: str = '', end: str = ''):
@@ -212,7 +212,13 @@ def range(title: str, start: str = '', end: str = ''):
     with sqlite3.connect(DB_PATH) as con:
         cur = con.execute(sql, args)
         rows = cur.fetchall()
-    return [{"captured_at": r[0], "votes": r[1]} for r in rows]
+    deduped = []
+    seen = set()
+    for r in rows:
+        if r[0] not in seen:
+            seen.add(r[0])
+            deduped.append(r)
+    return [{"captured_at": r[0], "votes": r[1]} for r in deduped]
 
 @app.get("/api/diff")
 def diff(title: str):

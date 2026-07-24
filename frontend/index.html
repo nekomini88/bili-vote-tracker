@@ -318,18 +318,18 @@ async function drawChart(){
     ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
     ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
     for(let i=0;i<=5;i++){ const y=Math.round(i*(h-40)/5)+20; ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(w-10,y);ctx.stroke(); }
-    if(chartMode === 'bar' && points.length){
-      const votes = points.map(p=>p.votes);
+    if(chartMode === 'bar' && canvasPoints.length){
+      const votes = canvasPoints.map(p=>p.votes);
       const max = Math.max(...votes); const min = Math.min(...votes);
       const pad=60; const plotW=w-90; const plotH=h-70;
-      const bw = Math.max(6, plotW / points.length - 2);
-      points.forEach((p,i)=>{
-        const x = pad + (i/(points.length||1))*plotW;
+      const bw = Math.max(6, plotW / canvasPoints.length - 2);
+      canvasPoints.forEach((p,i)=>{
+        const x = pad + (i/(canvasPoints.length||1))*plotW;
         const bh = ((p.votes-min)/(max-min||1))*plotH;
         const y = 20+plotH-bh;
         ctx.fillStyle = 'rgba(64,158,255,0.85)';
         ctx.fillRect(x,y,bw,bh);
-        if(points.length < 20 || i % Math.ceil(points.length/20) === 0){
+        if(canvasPoints.length < 20 || i % Math.ceil(canvasPoints.length/20) === 0){
           ctx.fillStyle='#606266'; ctx.font='10px sans-serif';
           ctx.fillText(new Date(p.captured_at).toLocaleTimeString(), x, 20+plotH+14);
         }
@@ -337,8 +337,8 @@ async function drawChart(){
       ctx.fillStyle='#303133'; ctx.font='12px sans-serif';
       ctx.fillText(max.toLocaleString(), 6, 30);
       ctx.fillText(min.toLocaleString(), 6, h-20);
-    } else if(chartMode === 'delta' && points.length >= 2){
-      const deltas = points.slice(1).map((p,i)=> p.votes - points[i].votes);
+    } else if(chartMode === 'delta' && canvasPoints.length >= 2){
+      const deltas = canvasPoints.slice(1).map((p,i)=> p.votes - canvasPoints[i].votes);
       const max = Math.max(...deltas,0); const min = Math.min(...deltas,0);
       const pad=60; const plotW=w-90; const plotH=h-70;
       const bw = Math.max(6, plotW / deltas.length - 2);
@@ -353,19 +353,19 @@ async function drawChart(){
       ctx.fillText(`+${fmt(max)}`, 6, 30);
       ctx.fillText(`${fmt(min)}`, 6, h-20);
       ctx.fillText('0', 20, 20+plotH/2+6);
-    } else if(points.length >= 2){
-      const votes = points.map(p=>p.votes);
+    } else if(canvasPoints.length >= 2){
+      const votes = canvasPoints.map(p=>p.votes);
       const mn = Math.min(...votes); const mx = Math.max(...votes);
       const pad = 20; const plotW = w-60; const plotH = h-70;
-      const xFor = i => 50 + (i/(points.length-1))*plotW;
+      const xFor = i => 50 + (i/(canvasPoints.length-1))*plotW;
       const yFor = v => 20 + plotH - ((v-mn)/(mx-mn||1))*plotH;
       ctx.beginPath(); ctx.strokeStyle = '#409eff'; ctx.lineWidth = 2;
-      points.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+      canvasPoints.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
       ctx.stroke();
       ctx.beginPath(); ctx.fillStyle = 'rgba(64,158,255,0.15)';
-      points.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); i?ctx.lineTo(x,y):ctx.moveTo(x,y); ctx.lineTo(x,yFor(p.votes)); ctx.lineTo(x,20+plotH); });
+      canvasPoints.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); i?ctx.lineTo(x,y):ctx.moveTo(x,y); ctx.lineTo(x,yFor(p.votes)); ctx.lineTo(x,20+plotH); });
       ctx.closePath(); ctx.fill();
-      points.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fillStyle='#409eff'; ctx.fill(); });
+      canvasPoints.forEach((p,i)=>{ const x=xFor(i), y=yFor(p.votes); ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fillStyle='#409eff'; ctx.fill(); });
       ctx.fillStyle='#303133'; ctx.font='12px sans-serif';
       ctx.fillText(mx.toLocaleString(), 6, yFor(mx)+4);
       ctx.fillText(mn.toLocaleString(), 6, yFor(mn)+4);
