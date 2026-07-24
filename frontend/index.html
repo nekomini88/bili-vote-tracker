@@ -186,11 +186,15 @@ function api(path, opts={}) {
 
 async function renderGeoFooter(){
   try{
-    const j = await fetch('/api/my-info').then(r=>r.json()).catch(()=>({}));
+    let j = {};
+    try{
+      const r = await fetch('https://ipapi.co/json/', {signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined});
+      if(r.ok) j = await r.json();
+    }catch(e){}
     const parts = [];
-    if(j && j.country && j.city) parts.push(`${j.country} · ${j.city}`);
-    else if(j && j.country) parts.push(j.country);
-    if(j && j.ip) parts.push(j.ip);
+    if(j.country_name && j.city) parts.push(`${j.country_name} · ${j.city}`);
+    else if(j.country_name) parts.push(j.country_name);
+    if(j.ip) parts.push(j.ip);
     const browser = detectBrowser();
     if(browser) parts.push(browser);
     const el = document.getElementById('geoFooter');
