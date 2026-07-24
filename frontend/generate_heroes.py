@@ -1,212 +1,61 @@
-#!/usr/bin/env python3
-import os
 from pathlib import Path
-try:
-    from PIL import Image, ImageDraw, ImageFont
-except ImportError:
-    import subprocess, sys
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'Pillow', '-q'])
-    from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter
 
-CANDIDATES = [
-    ("迪迦奥特曼", 1),
-    ("梦比优斯奥特曼", 2),
-    ("雷欧奥特曼", 3),
-    ("捷德奥特曼", 4),
-    ("布莱泽奥特曼", 5),
-    ("戴拿奥特曼", 6),
-    ("奈克赛斯奥特曼", 7),
-    ("盖亚奥特曼", 8),
-    ("银河奥特曼", 9),
-    ("欧布奥特曼", 10),
-    ("赛罗奥特曼", 11),
-    ("泽塔奥特曼", 12),
-    ("艾克斯奥特曼", 13),
-    ("泰迦奥特曼", 14),
-    ("希卡利奥特曼", 15),
-    ("提欧奥特曼", 16),
-    ("高斯奥特曼", 17),
-    ("特利迦奥特曼", 18),
-    ("阿古茹奥特曼", 19),
-    ("麦克斯奥特曼", 20),
+out = Path('frontend/assets/heroes')
+colors = [
+    '#7ec8e3','#b39ddb','#80cbc4','#ffab91','#fff59d','#90caf9','#ce93d8','#a5d6a7',
+    '#ffcc80','#80deea','#f48fb1','#b0bec5','#9fa8da','#81c784','#64b5f6','#e6ee9c',
+    '#ff8a65','#4dd0e1','#ba68c8','#4db6ac'
 ]
 
-# Unique color scheme per candidate - distinct colors
-COLORS = [
-    (99, 102, 241),   # 迪迦 - Indigo
-    (59, 130, 246),   # 梦比优斯 - Blue
-    (147, 51, 234),   # 雷欧 - Purple
-    (236, 72, 153),   # 捷德 - Pink
-    (244, 63, 94),    # 布莱泽 - Rose
-    (14, 165, 233),   # 戴拿 - Sky
-    (6, 182, 212),    # 奈克赛斯 - Cyan
-    (16, 185, 129),   # 盖亚 - Emerald
-    (132, 204, 22),   # 银河 - Lime
-    (250, 204, 21),   # 欧布 - Yellow
-    (245, 158, 11),   # 赛罗 - Amber
-    (239, 68, 68),    # 泽塔 - Red
-    (220, 38, 38),    # 艾克斯 - Dark Red
-    (249, 115, 22),   # 泰迦 - Orange
-    (234, 179, 8),    # 希卡利 - Gold
-    (168, 85, 247),   # 提欧 - Violet
-    (139, 92, 246),   # 高斯 - Purple
-    (59, 130, 246),   # 特利迦 - Blue
-    (236, 72, 153),   # 阿古茹 - Pink
-    (6, 182, 212),    # 麦克斯 - Cyan
-]
+def make_face(color: str, index: int):
+    size = 200
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
 
-SIZE = 120
+    # Color fill with soft rounded edges
+    base = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    bd = ImageDraw.Draw(base)
+    bd.ellipse([12, 12, size - 12, size - 12], fill=color, outline=(255,255,255,55), width=2)
+    base = base.filter(ImageFilter.GaussianBlur(radius=6))
+    img = Image.alpha_composite(img, base)
+    d = ImageDraw.Draw(img)
 
-def get_char(name):
-    """Extract the distinctive first character from the Chinese name."""
-    if name.startswith("迪迦"):
-        return "迪"
-    elif name.startswith("梦比优斯"):
-        return "梦"
-    elif name.startswith("雷欧"):
-        return "雷"
-    elif name.startswith("捷德"):
-        return "捷"
-    elif name.startswith("布莱泽"):
-        return "布"
-    elif name.startswith("戴拿"):
-        return "戴"
-    elif name.startswith("奈克赛斯"):
-        return "奈"
-    elif name.startswith("盖亚"):
-        return "盖"
-    elif name.startswith("银河"):
-        return "银"
-    elif name.startswith("欧布"):
-        return "欧"
-    elif name.startswith("赛罗"):
-        return "赛"
-    elif name.startswith("泽塔"):
-        return "泽"
-    elif name.startswith("艾克斯"):
-        return "艾"
-    elif name.startswith("泰迦"):
-        return "泰"
-    elif name.startswith("希卡利"):
-        return "希"
-    elif name.startswith("提欧"):
-        return "提"
-    elif name.startswith("高斯"):
-        return "高"
-    elif name.startswith("特利迦"):
-        return "特"
-    elif name.startswith("阿古茹"):
-        return "阿"
-    elif name.startswith("麦克斯"):
-        return "麦"
-    return name[0]
+    # Head oval
+    d.ellipse([52, 38, 148, 138], fill=(255, 245, 235, 255), outline=(238, 224, 210, 255), width=2)
+    d.chord([58, 42, 142, 134], start=210, end=-30, fill=(255, 245, 235, 255), outline=(238, 224, 210, 255))
 
-def create_avatar(name, index, color):
-    img = Image.new('RGBA', (SIZE, SIZE), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    
-    cx, cy = SIZE // 2, SIZE // 2
-    radius = SIZE // 2 - 4
-    
-    # Draw outer glow
-    for i in range(3):
-        alpha = 80 - i * 25
-        glow_radius = radius + 2 + i * 2
-        draw.ellipse(
-            [cx - glow_radius, cy - glow_radius, cx + glow_radius, cy + glow_radius],
-            outline=(*color, alpha),
-            width=2
-        )
-    
-    # Draw main circle with gradient effect
-    for r in range(radius, radius - 15, -1):
-        ratio = (radius - r) / 15
-        r_c = int(color[0] * (1 - ratio * 0.3))
-        g_c = int(color[1] * (1 - ratio * 0.3))
-        b_c = int(color[2] * (1 - ratio * 0.3))
-        draw.ellipse(
-            [cx - r, cy - r, cx + r, cy + r],
-            outline=(r_c, g_c, b_c, 255),
-            width=1
-        )
-    
-    # Fill circle
-    draw.ellipse(
-        [cx - radius + 2, cy - radius + 2, cx + radius - 2, cy + radius - 2],
-        fill=(*color, 255)
-    )
-    
-    # Draw inner circle
-    inner_radius = radius - 12
-    draw.ellipse(
-        [cx - inner_radius, cy - inner_radius, cx + inner_radius, cy + inner_radius],
-        outline=(255, 255, 255, 180),
-        width=2
-    )
-    
-    # Draw Chinese character
-    char = get_char(name)
+    # Eyes
+    d.ellipse([78, 90, 98, 110], fill=(30, 30, 30, 255))
+    d.ellipse([102, 90, 122, 110], fill=(30, 30, 30, 255))
+    d.ellipse([82, 94, 90, 102], fill=(255, 255, 255, 255))
+    d.ellipse([106, 94, 114, 102], fill=(255, 255, 255, 255))
+
+    # Nose
+    d.polygon([(96, 118), (104, 118), (100, 128)], fill=(220, 200, 180, 255))
+
+    # Mouth
+    d.arc([88, 126, 112, 146], start=10, end=170, fill=(180, 110, 110, 255), width=3)
+
+    # Blush
+    for cx, cy in [(72, 124), (128, 124)]:
+        d.ellipse([cx - 6, cy - 4, cx + 6, cy + 4], fill=(255, 160, 160, 110))
+
+    # Letter code on top: Ultraman letter, ensure uniqueness
     try:
-        # Try to use system fonts
-        font_large = ImageFont.truetype("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 56)
-        font_small = ImageFont.truetype("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 20)
-    except:
-        try:
-            font_large = ImageFont.truetype("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 56)
-            font_small = ImageFont.truetype("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 20)
-        except:
-            font_large = ImageFont.load_default()
-            font_small = ImageFont.load_default()
-    
-    # Get text bounding box
-    bbox = draw.textbbox((0, 0), char, font=font_large)
-    text_w = bbox[2] - bbox[0]
-    text_h = bbox[3] - bbox[1]
-    
-    # Draw character with shadow
-    shadow_offset = 2
-    draw.text(
-        (cx - text_w // 2 + shadow_offset, cy - text_h // 2 - 8 + shadow_offset),
-        char,
-        font=font_large,
-        fill=(0, 0, 0, 100)
-    )
-    
-    # Draw main character
-    draw.text(
-        (cx - text_w // 2, cy - text_h // 2 - 8),
-        char,
-        font=font_large,
-        fill=(255, 255, 255, 255)
-    )
-    
-    # Draw rank number at bottom
-    rank_text = f"#{index}"
-    bbox2 = draw.textbbox((0, 0), rank_text, font=font_small)
-    rank_w = bbox2[2] - bbox2[0]
-    draw.text(
-        (cx - rank_w // 2, cy + inner_radius - 25),
-        rank_text,
-        font=font_small,
-        fill=(255, 255, 255, 255)
-    )
-    
-    return img
+        from PIL import ImageFont
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 26)
+        letter = chr(65 + (index - 1) % 26)
+        bb = d.textbbox((0, 0), letter, font=font)
+        tw = bb[2] - bb[0]
+        d.text((size / 2 - tw / 2, 16), letter, fill=(255, 255, 255, 235), font=font)
+    except Exception:
+        pass
 
-def main():
-    output_dir = Path(__file__).parent
-    output_dir.mkdir(exist_ok=True)
-    
-    print(f"🎨 Generating {len(CANDIDATES)} Ultraman avatars...")
-    
-    for idx, (name, number) in enumerate(CANDIDATES):
-        color = COLORS[idx]
-        img = create_avatar(name, number, color)
-        output_path = output_dir / f"ultraman_{number:02d}.png"
-        img.save(output_path, 'PNG')
-        print(f"  ✓ {name} -> ultraman_{number:02d}.png")
-    
-    print(f"\n✅ Generated {len(CANDIDATES)} avatars in {output_dir}")
+    out.mkdir(parents=True, exist_ok=True)
+    img.save(out / f'ultraman_{str(index).zfill(2)}.png')
 
-if __name__ == '__main__':
-    main()
+for i, color in enumerate(colors, start=1):
+    make_face(color, i)
+
+print('generated', len(list(out.glob('ultraman_*.png'))))
