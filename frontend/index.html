@@ -269,7 +269,7 @@ const heroImg = (title)=>{
   if(i < 0) return '';
   const n = String(i+1).padStart(2,'0');
   const src = `assets/heroes/ultraman_${n}.png`;
-  return `<img src="${src}" alt="${title}" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;object-fit:cover">`;
+  return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;object-fit:cover">`;
 };
 
 function api(path, opts={}) {
