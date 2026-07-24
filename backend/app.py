@@ -266,4 +266,34 @@ def trigger_once(username: str = Depends(admin_auth)):
 def healthz():
     return {"ok": True}
 
+_CACHE_GEO = {"ts": 0, "data": {}}
+_SUCCESS_RESPONSE = {"ok": True}
+
+@app.get("/api/my-info")
+def my_info(request: fastapi.Request):
+    ip = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip() or (request.client.host if request.client else "")
+    ip = (ip or "").strip()
+    now = int(time.time())
+    data = dict(_CACHE_GEO["data"])
+    if not ip:
+        data.update({"ip": "", "country": "", "city": ""})
+        return data
+    if data.get("ip") != ip or now - _CACHE_GEO["ts"] > 60:
+        try:
+            r = requests.get(f"https://ipapi.co/{ip}/json/", timeout=5)
+            if r.status_code == 200:
+                j = r.json()
+                data.update({
+                    "ip": j.get("ip", ip),
+                    "country": j.get("country_name", ""),
+                    "city": j.get("city", ""),
+                })
+            else:
+                data.update({"ip": ip, "country": "", "city": ""})
+        except Exception:
+            data.update({"ip": ip, "country": "", "city": ""})
+        _CACHE_GEO["ts"] = now
+        _CACHE_GEO["data"] = dict(data)
+    return data
+
 app.mount("/", StaticFiles(directory="/app/frontend", html=True), name="frontend")
