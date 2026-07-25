@@ -17,64 +17,13 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang 
 .glass-orb-1{width:50vw;height:50vh;top:-10%;left:-5%;background:#0089c966}
 .glass-orb-2{width:40vw;height:45vh;bottom:-5%;right:-5%;background:#00a88359}
 .glass-orb-3{width:35vw;height:35vh;top:30%;left:40%;background:#b37ed84d}
-.dark .glass-orb-1{background:#003f60}
-.dark .glass-orb-2{background:#00363a}
-.dark .glass-orb-3{background:#13284b}
-.dark{color-scheme:dark}
-.dark *{scrollbar-color:#475569 transparent}
-.dark ::-webkit-scrollbar{width:10px}
-.dark ::-webkit-scrollbar-track{background:transparent}
-.dark ::-webkit-scrollbar-thumb{background:#475569;border-radius:999px}
-.dark .app{background:rgba(15,23,42,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#e2e8f0}
-.dark header{border-color:#334155}
-.dark header h1{color:#f1f5f9}
-.dark header h1 .sub{color:#94a3b8}
-.dark header .toolbar{grid-gap:8px;gap:8px}
-.dark header .toolbar .btn{background:#1e293b;border:1px solid #334155;color:#e2e8f0;box-shadow:0 2px 0 #0f172a}
-.dark header .toolbar .btn:hover{background:#334155;border-color:#475569}
-.dark header .toolbar .btn:active{transform:translateY(2px);box-shadow:none}
-.dark .logo-wrap{filter:drop-shadow(0 0 8px rgba(59,130,246,.35))}
-.dark header,header{border-bottom:1px solid transparent}
-.dark header{background:rgba(15,23,42,.55);border-bottom-color:#334155}
-.dark .sticky-sub{background:rgba(15,23,42,.85);border-bottom:1px solid #334155;color:#94a3b8;backdrop-filter:blur(10px)}
-.dark .sticky-sub .btn{background:#1e293b;border-color:#334155;color:#e2e8f0}
-.dark .sticky-sub .btn.active{background:#3b82f6;border-color:#3b82f6;color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.35)}
-.dark .candidate-wrap label{color:#94a3b8}
-.dark .candidate-wrap select{background:#1e293b!important;border:1px solid #334155!important;color:#e2e8f0!important}
-.dark .candidate-wrap select option{background:#0f172a;color:#e2e8f0}
-.dark input[type=datetime-local],.dark input[type=date]{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
-.dark input[type=checkbox]{accent-color:#3b82f6}
-.dark .chart{background:rgba(30,41,59,.55);border:1px solid #334155;box-shadow:0 10px 40px rgba(0,0,0,.5);color:#e2e8f0}
-.dark .chart-canvas{background:#0f172a}
-.dark .tabs .tab{background:#1e293b;border:1px solid #334155;color:#94a3b8}
-.dark .tabs .tab.active{background:#3b82f6;border-color:#3b82f6;color:#fff}
-.dark table{color:#e2e8f0;border-color:#1e293b}
-.dark thead{background:rgba(30,41,59,.85);color:#94a3b8;border-color:#334155}
-.dark tbody tr:nth-child(even){background:rgba(255,255,255,.03)}
-.dark tbody tr:hover{background:rgba(59,130,246,.15)}
-.dark td{border-color:#1e293b}
-.dark th{border-color:#334155}
-.dark footer{color:#94a3b8;border-top-color:#334155}
-.dark #geoLines span{color:#cbd5e1!important}
-.dark .empty{color:#64748b}
-.dark .modal-backdrop{background:rgba(0,0,0,.7)}
-.dark .modal{background:#0f172a;border:1px solid #334155;color:#e2e8f0}
-.dark .modal input,.dark .modal label{color:#e2e8f0}
-.dark input[type=password],.dark input[type=text]{background:#1e293b;border:1px solid #334155;color:#e2e8f0}
-.dark #dnBtn{background:#b45309;border-color:#92400e;color:#fff}
 @keyframes orb-float{0%{transform:translate(0) scale(1)}50%{transform:translate(8%,12%) scale(1.1)}to{transform:translate(-5%,8%) scale(.95)}}
 .app{max-width:1280px;margin:0 auto;padding:24px 14px 64px}
 header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 18px;flex-wrap:wrap;gap:10px}
 header h1{font-size:22px;font-weight:700;margin:0;letter-spacing:.2px}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{padding:9px 14px;border:none;border-radius:8px;color:#fff;background:var(--accent);cursor:pointer;font-size:14px;transition:filter .2s,transform .05s}
-.btn:active{transform:translateY(1px)}
-.btn:disabled{opacity:.6;cursor:not-allowed}
-.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
-.btn-bubble{position:relative;border-radius:9999px;border:none;color:#fff;background:linear-gradient(180deg,#f5a623,#e09015);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 10px rgba(224,144,21,.25);cursor:pointer;font-size:18px;line-height:1;padding:10px 14px;transition:transform .15s ease,box-shadow .2s ease}
-.btn-bubble:hover{animation:bubble-pop .35s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 18px rgba(224,144,21,.35)}
-.btn-bubble:active{transform:translateY(1px)}
-@keyframes bubble-pop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.btn{padding:8px 10px;border:none;border-radius:8px;color:var(--muted);background:transparent;cursor:pointer;font-size:16px;transition:color .15s,background .15s}
+.btn:hover{color:var(--ink);background:rgba(0,0,0,.04)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
 .stat .label{font-size:12px;color:var(--muted)}
@@ -106,9 +55,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
 .candidate-wrap select{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink);font-size:14px;min-width:180px;cursor:pointer}
 .chart-hint{font-size:12px;color:var(--muted)}
 .placeholder{opacity:.25}
-.skeleton{display:inline-block;width:64px;height:14px;border-radius:999px;background:linear-gradient(90deg,#cbd5e1 25%,#94a3b8 50%,#cbd5e1 75%);background-size:200% 100%;animation:shimmer 1.4s ease infinite;color:transparent}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.dark .skeleton{background:linear-gradient(90deg,#334155 25%,#475569 50%,#334155 75%);background-size:200% 100%}
 </style>
 </head>
 <body>
@@ -120,7 +66,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
 <div class="app">
   <header>
     <h1>📊 Bili Vote Tracker</h1>
-    <button class="btn btn-bubble" onclick="toggleDayNight()" title="切换白天/夜晚">🌓</button>
     <div class="toolbar">
       <select id="themeSelect" onchange="setTheme(this.value)" style="padding:9px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink);font-size:14px;cursor:pointer">
         <option value="emerald">Emerald</option>
@@ -136,7 +81,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
         <option value="material-pink">Pink</option>
         <option value="material-teal">Teal</option>
       </select>
-      <button class="btn" onclick="toggleDayNight()" id="dnBtn" title="切换白天/夜晚">🌓</button>
       <button class="btn btn-ghost" onclick="document.getElementById('cfgPreset').focus()" title="配置">⚙️</button>
       <button class="btn" id="btnTrigger" onclick="openAdmin()">管理后台</button>
     </div>
@@ -202,19 +146,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
   </div>
 </div>
 
-  <div style="max-width:1280px;margin:0 auto;padding:0 14px">
-  <footer id="geoFooter" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:16px 0 10px;flex-wrap:wrap;gap:10px">
-  <div style="font:400 12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#6e6e73">
-    <span style="color:#8e8e93">Powered by</span> <span style="font-weight:600;color:#2b2b2b">NekoMini</span>
-  </div>
-  <div id="geoLines" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#f7f7f8,#eaeaec);border:1px solid #d6d6da;border-radius:999px;padding:7px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.6);color:#2b2b2b;font:500 13px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif">
-    <span id="geoLoading" style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#e8364f;display:inline-block"></span><span style="color:#6e6e73">loading...</span></span>
-  </div>
-  <div style="font:400 12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#6e6e73;text-align:right">
-    <span style="color:#8e8e93">Theme by</span> <span style="font-weight:600;color:#2b2b2b">NekoMini</span>
-  </div>
-</footer>
-</div>
+  <footer style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:14px 0 8px;color:var(--muted);font-size:12px">
+    <span>Powered by <a href="#" style="color:var(--ink);text-decoration:none;font-weight:600">Komari Monitor</a></span>
+    <span>Theme by <a href="#" style="color:var(--ink);text-decoration:none;font-weight:600">Komari Emerald</a></span>
+  </footer>
 <div class="modal-backdrop" id="adminModal">
   <div class="modal">
     <h3>🔐 管理员后台</h3>
@@ -577,25 +512,10 @@ renderGeoFooter();
 load();
 setInterval(load, 1000*30);
 function setTheme(name){
-  document.documentElement.setAttribute('data-theme', name);
   const el = document.getElementById('themeSelect');
+  document.documentElement.setAttribute('data-theme', name);
   if(el) el.value = name;
   try{ localStorage.setItem('theme', name); }catch(e){}
-}
-function toggleDayNight(){
-  const root = document.documentElement;
-  const isDark = root.classList.contains('dark');
-  if(isDark){
-    root.classList.remove('dark');
-    try{ localStorage.setItem('daynight','light'); }catch(e){}
-    const btn = document.getElementById('dnBtn');
-    if(btn) btn.textContent = '🌙';
-  }else{
-    root.classList.add('dark');
-    try{ localStorage.setItem('daynight','dark'); }catch(e){}
-    const btn = document.getElementById('dnBtn');
-    if(btn) btn.textContent = '☀️';
-  }
 }
 function api(path, opts={}) {
   return fetch(path, opts).then(r => r.json()).catch(e => ({error: e.message}));
@@ -606,12 +526,6 @@ function api(path, opts={}) {
     const preferred = ['emerald','midnight','ruby','gold','ocean','sunrise','green-mountain','blue-water','night','material-indigo','material-pink','material-teal'].includes(saved) ? saved : 'emerald';
     setTheme(preferred);
   }catch(e){ setTheme('emerald'); }
-  try{
-    const dn = localStorage.getItem('daynight');
-    const root = document.documentElement;
-    if(dn === 'dark'){ root.classList.add('dark'); const btn = document.getElementById('dnBtn'); if(btn) btn.textContent = '☀️'; }
-    else{ root.classList.remove('dark'); const btn = document.getElementById('dnBtn'); if(btn) btn.textContent = '🌙'; }
-  }catch(e){ const btn = document.getElementById('dnBtn'); if(btn) btn.textContent = '🌙'; }
 })();
 </script>
 </body>
