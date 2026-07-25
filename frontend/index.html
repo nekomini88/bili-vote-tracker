@@ -233,9 +233,9 @@ function api(path, opts={}) {
 async function renderGeoFooter(){
   const flagEl = document.getElementById('footerFlag');
   const locEl = document.getElementById('footerLocation');
-  const ipEl = document.getElementById('footerIp');
-  const browEl = document.getElementById('footerBrowser');
-  if(!flagEl || !locEl || !ipEl || !browEl) return;
+  const ipTextEl = document.getElementById('footerIpText');
+  const browTextEl = document.getElementById('footerBrowserText');
+  if(!flagEl || !locEl || !ipTextEl || !browTextEl) return;
   let j = {};
   let src = '';
   try{
@@ -250,8 +250,8 @@ async function renderGeoFooter(){
     const browser = detectBrowser();
     flagEl.innerHTML = countryCode ? countryCodeToFlag(countryCode) : '<span style="width:14px;height:14px;border-radius:50%;background:#e8364f;display:inline-block"></span>';
     locEl.textContent = [countryName, city].filter(Boolean).join(' • ') || '-';
-    ipEl.textContent = ip || '-';
-    browEl.textContent = browser || '-';
+    if(ipTextEl) ipTextEl.textContent = ip || '-';
+    if(browTextEl) browTextEl.textContent = browser || '-';
   };
   render();
   if(!src){
@@ -271,11 +271,11 @@ function toggleFooterPill(el){
     el.style.boxShadow = '0 10px 28px rgba(0,0,0,0.08),inset -1px -1px 0 rgba(255,255,255,0.8)';
   }else{
     delete el.dataset.expanded;
-    el.style.background = 'rgba(255,255,255,0.3)';
-    el.style.borderRadius = '12px';
+    el.style.background = 'rgba(255,255,255,0.25)';
+    el.style.borderRadius = '999px';
     el.style.transform = 'translateY(0)';
-    el.style.padding = '6px 12px';
-    el.style.boxShadow = '0 0 16px rgba(0,0,0,0.05),inset -1px -1px 0 rgba(255,255,255,0.5)';
+    el.style.padding = '4px 10px';
+    el.style.boxShadow = 'inset -1px -1px 0 rgba(255,255,255,0.5),0 0 16px rgba(0,0,0,0.05)';
   }
 }
 function countryCodeToFlag(code){
