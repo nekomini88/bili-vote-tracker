@@ -61,7 +61,6 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang 
 .dark .modal{background:#0f172a;border:1px solid #334155;color:#e2e8f0}
 .dark .modal input,.dark .modal label{color:#e2e8f0}
 .dark input[type=password],.dark input[type=text]{background:#1e293b;border:1px solid #334155;color:#e2e8f0}
-.dark .btn-bubble::after{background:#b91c1c;box-shadow:0 2px 8px rgba(185,28,28,.45)}
 .dark #dnBtn{background:#b45309;border-color:#92400e;color:#fff}
 @keyframes orb-float{0%{transform:translate(0) scale(1)}50%{transform:translate(8%,12%) scale(1.1)}to{transform:translate(-5%,8%) scale(.95)}}
 .app{max-width:1280px;margin:0 auto;padding:24px 14px 64px}
@@ -102,17 +101,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
 .candidate-wrap label{font-size:13px;color:var(--muted)}
 .candidate-wrap select{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink);font-size:14px;min-width:180px;cursor:pointer}
 .chart-hint{font-size:12px;color:var(--muted)}
-
-.btn-bubble{position:relative;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:color-mix(in oklch, var(--card) 70%, transparent);backdrop-filter:saturate(150%) blur(14px);-webkit-backdrop-filter:saturate(150%) blur(14px);box-shadow:0 1px 0 rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.08);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer;user-select:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease,background .2s ease}
-.btn-bubble:hover{background:color-mix(in oklch, var(--card) 84%, transparent);transform:translateY(-1px) scale(1.04);box-shadow:0 1px 0 rgba(0,0,0,.06),0 14px 34px rgba(0,0,0,.12)}
-.btn-bubble:active{transform:translateY(0) scale(0.94)}
-.dark .btn-bubble{background:color-mix(in oklch, #ffffff 14%, transparent);border-color:#334155;color:#e2e8f0}
-.dark .btn-bubble:hover{background:color-mix(in oklch, #ffffff 20%, transparent)}
-
-.bubble-toast{position:fixed;top:20px;right:20px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.18);z-index:9999;display:flex;gap:10px;align-items:flex-start;max-width:min(380px,92vw);animation:bubble-in .35s cubic-bezier(.34,1.56,.64,1) forwards, bubble-out .3s ease-in 3.2s forwards;color:var(--ink);font-size:14px}
-@keyframes bubble-in{0%{opacity:0;transform:translateY(-20px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes bubble-out{to{opacity:0;transform:translateY(-10px) scale(.96)}}
-.bubble-toast::before{content:"";position:absolute;top:-6px;right:14px;width:10px;height:10px;background:var(--card);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg);border-radius:2px}
 .placeholder{opacity:.25}
 .skeleton{display:inline-block;width:64px;height:14px;border-radius:999px;background:linear-gradient(90deg,#cbd5e1 25%,#94a3b8 50%,#cbd5e1 75%);background-size:200% 100%;animation:shimmer 1.4s ease infinite;color:transparent}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -144,9 +132,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
         <option value="material-teal">Teal</option>
       </select>
       <button class="btn" onclick="toggleDayNight()" id="dnBtn" title="切换白天/夜晚">🌓</button>
-      <button class="btn btn-bubble" id="bellBtn" onclick="showBubbleToast()" title="通知">
-        🔔
-      </button>
+      <button class="btn btn-ghost" onclick="document.getElementById('cfgPreset').focus()" title="配置">⚙️</button>
       <button class="btn" id="btnTrigger" onclick="openAdmin()">管理后台</button>
     </div>
   </header>
@@ -285,14 +271,6 @@ const rankIndex = (title) => {
   return i >= 0 ? i : CANDIDATE_ORDER.length;
 };
 const rankSort = (a,b) => rankIndex(a.title||'') - rankIndex(b.title||'');
-const addAvatarHtml = (title)=>{
-  const i = CANDIDATE_ORDER.indexOf(title||'');
-  const n = (i >= 0 ? i+1 : (title.charCodeAt(0)||0) % 20 + 1);
-  const num = String(n).padStart(2,'0');
-  const src = `assets/heroes/ultraman_${num}.png`;
-  const fallback = `<span style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#409eff,#0D8ABC);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px">${title?title[0]:''}</span>`;
-  return `<img src="${src}" alt="" style="width:28px;height:28px;border-radius:50%;vertical-align:middle;margin-right:8px;background:#f3f4f6;object-fit:cover;border:1px solid #ddd" onerror="this.outerHTML='${fallback.replace(/'/g,"&apos;")}'">`;
-};
 
 function api(path, opts={}) {
   return fetch(path, opts).then(r => r.json()).catch(e => ({error: e.message}));
@@ -361,7 +339,7 @@ async function load() {
     } else {
       tb.innerHTML = latestCache.slice().sort(rankSort).map((x,idx)=> `<tr>
         <td>${idx+1}</td>
-        <td>${addAvatarHtml(x.title)}<b>${x.title||''}</b></td>
+        <td><b>${x.title||''}</b></td>
         <td><b class="kpi-blue">${fmt(x.votes)}</b></td>
         <td class="muted" id="d1m_${idx}">-</td>
         <td class="muted" id="d5m_${idx}">-</td>
@@ -614,8 +592,8 @@ function toggleDayNight(){
     if(btn) btn.textContent = '☀️';
   }
 }
-function showBubbleToast(){}
-(function(){
+}
+function api(path, opts={}) {
   try{
     const saved = localStorage.getItem('theme');
     const preferred = ['emerald','midnight','ruby','gold','ocean','sunrise','green-mountain','blue-water','night','material-indigo','material-pink','material-teal'].includes(saved) ? saved : 'emerald';
