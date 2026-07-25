@@ -597,8 +597,10 @@ function toggleDayNight(){
     if(btn) btn.textContent = '☀️';
   }
 }
-}
 function api(path, opts={}) {
+  return fetch(path, opts).then(r => r.json()).catch(e => ({error: e.message}));
+}
+(function init(){
   try{
     const saved = localStorage.getItem('theme');
     const preferred = ['emerald','midnight','ruby','gold','ocean','sunrise','green-mountain','blue-water','night','material-indigo','material-pink','material-teal'].includes(saved) ? saved : 'emerald';
