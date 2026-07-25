@@ -152,10 +152,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
   </div>
 </div>
 
-  <footer style="border-top:1px solid var(--line);padding:14px 0 8px;text-align:center;color:var(--muted);font-size:12px">
-    <span style="margin:0 4px">Powered By <a href="#" style="color:var(--ink);text-decoration:none;font-weight:600">Nekomini</a></span>
-    <span style="margin:0 6px;color:var(--line)">|</span>
-    <span style="margin:0 4px">Theme by <a href="#" style="color:var(--ink);text-decoration:none;font-weight:600">Nekomini</a></span>
+  <footer style="border-top:1px solid var(--line);padding:14px 0 8px;color:var(--muted);font-size:12px">
+    <div style="max-width:1280px;margin:0 auto;padding:0 14px;display:flex;justify-content:space-between;align-items:center">
+      <span>Powered By <a href="#" style="color:var(--ink);text-decoration:none;font-weight:600">Nekomini</a></span>
+      <span id="footerGeo" style="display:inline-flex;align-items:center;gap:8px">
+        <span>⏳ 获取IP信息中...</span>
+      </span>
+      <span>Theme by <a href="#" style="color:var(--ink);text-decoration:none;font-weight:600">Nekomini</a></span>
+    </div>
   </footer>
 <div class="modal-backdrop" id="adminModal">
   <div class="modal">
@@ -224,7 +228,7 @@ function api(path, opts={}) {
 }
 
 async function renderGeoFooter(){
-  const wrap = document.getElementById('geoLines');
+  const wrap = document.getElementById('footerGeo');
   if(!wrap) return;
   let j = {};
   let src = '';
