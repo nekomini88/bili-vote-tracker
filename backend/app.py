@@ -17,6 +17,7 @@ ADMIN_PASS = os.environ.get("ADMIN_PASS", "nekomini")
 TARGET_URL = os.environ.get("TARGET_URL", "https://b23.tv/wDz5Xnc")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "1"))
 UTC8 = timezone(timedelta(hours=8))
+APP_VERSION = Path("/app/VERSION").read_text().strip() if Path("/app/VERSION").exists() else "0.0.0"
 Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
 
 CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS vote_records (id INTEGER PRIMARY KEY AUTOINCREMENT, captured_at DATETIME DEFAULT CURRENT_TIMESTAMP, title TEXT, votes INTEGER, item_id TEXT, is_my_vote INTEGER DEFAULT 0)"
