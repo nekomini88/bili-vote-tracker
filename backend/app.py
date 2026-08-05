@@ -76,26 +76,48 @@ def fetch_votes(url: str):
         print("[fetch] missing vote ids")
         return []
     api = "https://api.bilibili.com/x/activity_components/vote_new/rank"
+    out = []
+    seen_ids = set()
     try:
-        r = requests.get(api, params={"vote_id": vote, "group_id": group, "activity_id": aid}, headers=HEADERS, timeout=15)
-        print("[fetch] api status", r.status_code)
-        if r.status_code != 200:
-            return []
-        payload = r.json()
-        if payload.get("code") != 0:
-            print("[fetch] api error", payload)
-            return []
-        items = payload.get("data", {}).get("items", [])
-        out = []
-        for it in items:
-            info = it.get("item", {}) or {}
-            out.append({
-                "item_id": it.get("item_id"),
-                "title": info.get("title") or "",
-                "votes": it.get("vote"),
-                "is_vote": int(it.get("is_vote") or 0),
-                "user_vote": it.get("user_vote", 0),
-            })
+        pn = 1
+        total = None
+        while True:
+            r = requests.get(api, params={"vote_id": vote, "group_id": group, "activity_id": aid, "pn": pn, "page_size": 20}, headers=HEADERS, timeout=15)
+            if r.status_code != 200:
+                print("[fetch] api status", r.status_code)
+                break
+            payload = r.json()
+            if payload.get("code") != 0:
+                print("[fetch] api error", payload)
+                break
+            data = payload.get("data") or {}
+            items = data.get("items", [])
+            if not items:
+                break
+            page_info = data.get("page") or {}
+            total = page_info.get("total", total)
+            for it in items:
+                iid = it.get("item_id")
+                if iid is not None:
+                    if iid in seen_ids:
+                        continue
+                    seen_ids.add(iid)
+                info = it.get("item", {}) or {}
+                out.append({
+                    "item_id": iid,
+                    "title": info.get("title") or "",
+                    "votes": it.get("vote"),
+                    "is_vote": int(it.get("is_vote") or 0),
+                    "user_vote": it.get("user_vote", 0),
+                })
+            print(f"[fetch] pn={pn} accumulated={len(out)}/{total or '?'}")
+            if total is not None and len(out) >= total:
+                break
+            if len(items) < 20:
+                break
+            pn += 1
+            if pn > 50:  # 安全上限
+                break
         if out:
             set_meta("activity_id", aid)
             set_meta("group_id", group)
