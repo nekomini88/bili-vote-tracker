@@ -1,17 +1,18 @@
 # Bili Vote Tracker 🗳️
 
-奥特曼人气投票实时监控面板 —— 抓取 Bilibili 活动投票数据，实时展示 20 位奥特曼候选人的票数、各时段增量与趋势图表，自带主题切换与地域/浏览器信息条。
+奥特曼人气投票实时监控面板 —— 抓取 Bilibili 活动投票数据，实时展示全部 46 位奥特曼候选人的票数、各时段增量与趋势图表，自带主题切换与地域/浏览器信息条。
 
 ## ✨ 功能特性
 
-- **实时轮询采集**：后台定时从 Bilibili 投票活动抓取候选人票数并落库（SQLite）
-- **候选人主表**：20 位奥特曼按**得票数从大到小**排序，显示当前票数 + 1m/5m/30m/6h/24h 环比增量
+- **实时轮询采集**：后台定时从 Bilibili 投票活动**分页抓取全部候选人**票数并落库（SQLite）
+- **候选人主表**：全部 46 位奥特曼按**得票数从大到小**排序，显示当前票数 + 1m/5m/30m/6h/24h 环比增量，每行附**官方立绘头像**
 - **多维图表**：
   - 📈 趋势线（票数随时间走势）
   - 📊 票数对比（当前各候选人票数）
   - 📉 增量柱状（每轮采集的票数增量）
   - 支持「按时间段查询」自定义起止区间
-- 🎨 多主题：Emerald / Midnight / Ruby / Gold / Ocean，本地记忆切换
+- 🎨 **奥特曼主题**：红蓝能量光效背景 + 46 位官方立绘头像 + 双主题光点 logo
+- 📱 **响应式**：手机端 stats 自动折叠 (2/1 列)、控件自适应、表格触摸滚动
 - 🌍 地域 Footer：国旗 + 国家 · 城市 · IP · 浏览器，点击展开，随 30s 自动刷新
 - 🔐 管理员后台：登录后可修改目标地址与采集间隔（HTTP Basic Auth）
 
@@ -64,11 +65,12 @@ docker compose up -d --build
 ```
 bili-vote-tracker/
 ├── backend/
-│   └── app.py            # FastAPI 后端：采集调度 + 数据 API
+│   └── app.py            # FastAPI 后端：分页采集调度 + 数据 API
 ├── frontend/
 │   ├── index.html        # 单页前端（内联 CSS/JS）
-│   ├── assets/heroes/    # 20 位奥特曼头图
-│   └── generate_heroes.py# 头图生成脚本
+│   ├── assets/heroes/    # 46 位奥特曼官方立绘头像
+│   ├── assets/vendor/    # 本地自托管 Tailwind browser build
+│   └── generate_heroes.py# 头像生成脚本（占位版）
 ├── db/
 │   └── votes.db          # SQLite（gitignore，不入库）
 ├── Dockerfile
@@ -80,14 +82,16 @@ bili-vote-tracker/
 ## 🛠️ 技术栈
 
 - **后端**：FastAPI + Uvicorn + APScheduler + SQLite
-- **前端**：原生 HTML/CSS/JS + Canvas 图表
+- **前端**：原生 HTML/CSS/JS + Canvas 图表 + 本地 Tailwind (browser build)
 - **部署**：Docker Compose
 
 ## 📈 数据说明
 
-- 候选人为 20 位奥特曼，前端 `rankSort` 按 `votes` 从大到小排序，票数相同按中文名 `localeCompare` 稳定排序
+- 候选人为**全部 46 位**奥特曼，后端用 `pn` 分页拉取（接口 `page.total` 决定页数，`page_num` 参数无效需用 `pn`）
+- 前端 `rankSort` 按 `votes` 从大到小排序，票数相同按中文名 `localeCompare` 稳定排序
+- 新入库候选（无历史对比点）diff 显示为灰色 `0`，老候选显示真实增量
 - `captured_at` 使用 UTC+8 本地时间，秒级精度
-- 同秒重复写入通过 `INSERT OR IGNORE` + `idx_vote_records_unique` 唯一索引去重
+- 同秒重复写入通过 `INSERT OR IGNORE` + `idx_vote_records_unique` 唯一索引(item_id) 去重
 
 ## 🔧 开发与调试
 
@@ -99,7 +103,7 @@ docker compose up -d --build           # 重建部署
 curl http://127.0.0.1:9008/healthz     # 健康检查
 ```
 
-> 完整的调试与架构教训见 Hermes 技能 `bili-vote-tracker-debug`（scheduler 单例、/api/latest 子查询、Geo 按 IP 缓存、前端 diff 并行化、主题对齐）。
+> 完整的调试与架构教训见 Hermes 技能 `bili-vote-tracker-debug`（scheduler 单例、/api/latest 子查询、Geo 按 IP 缓存、前端 diff 并行化、pn 分页拉全、主题对齐）。
 
 ## 📄 License
 
