@@ -2,7 +2,7 @@
  * 运行: node --test frontend/logic.test.js （Node 22+ 内置 test runner，零依赖） */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const L = require('./logic.js');
+const L = require('./assets/logic.js');
 
 // ---------- HERO_IDS / heroSrc ----------
 test('HERO_IDS 覆盖全部 46 位候选人', () => {
