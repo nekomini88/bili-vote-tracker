@@ -37,69 +37,80 @@ tailwind.config = {
 }
 </script>
 <style>
-:root{color-scheme:light;--bg:#f7f8fa;--card:#fff;--line:#e5e7eb;--ink:#303133;--muted:#606266;--accent:#409eff;--ok:#67c23a;--warn:#e6a23c;--danger:#f56c6c;--shadow:0 2px 12px rgba(0,0,0,.06);--r:10px;--theme-name:emerald;--banner-from:#f3fbf6;--banner-to:#eef7f1;--banner-line:#cde6d0}
-[data-theme="midnight"]{--bg:#f4f6f9;--card:#ffffff;--line:#e5e7eb;--ink:#0f172a;--muted:#475569;--accent:#3b82f6;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444;--banner-from:#eef2ff;--banner-to:#e0e7ff;--banner-line:#c7d2fe}
-[data-theme="ruby"]{--bg:#fff5f6;--card:#ffffff;--line:#fbd0d6;--ink:#2b1018;--muted:#6f3a4a;--accent:#e11d48;--ok:#16a34a;--warn:#d97706;--danger:#dc2626;--banner-from:#fff1f4;--banner-to:#ffe4e6;--banner-line:#fecdd3}
-[data-theme="gold"]{--bg:#fffbf5;--card:#ffffff;--line:#f0d898;--ink:#3b2a10;--muted:#7c5a20;--accent:#d97706;--ok:#15803d;--warn:#b45309;--danger:#b91c1c;--banner-from:#fffbeb;--banner-to:#fef3c7;--banner-line:#fde68a}
-[data-theme="ocean"]{--bg:#f0f9ff;--card:#ffffff;--line:#cfe5f7;--ink:#052038;--muted:#3b6d88;--accent:#0284c7;--ok:#059669;--warn:#d97706;--danger:#dc2626;--banner-from:#e0f2fe;--banner-to:#cffafe;--banner-line:#a5f3fc}
+:root{color-scheme:light;--bg:#fafafa;--bg-glow:rgba(64,158,255,.06);--card:#ffffff;--line:#ececec;--ink:#18181b;--muted:#71717a;--accent:#3b82f6;--accent2:#6366f1;--ok:#16a34a;--warn:#f59e0b;--danger:#ef4444;--shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);--r:14px;--banner-from:#ffffff;--banner-to:#fafafa}
+[data-theme="midnight"]{--bg:#f4f6fb;--bg-glow:rgba(59,130,246,.08);--card:#ffffff;--line:#e2e8f7;--ink:#0f172a;--muted:#475569;--accent:#3b82f6;--accent2:#6366f1;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444}
+[data-theme="ruby"]{--bg:#fdf9f9;--bg-glow:rgba(225,29,72,.07);--card:#ffffff;--line:#f4dbe3;--ink:#2b1018;--muted:#8a5a66;--accent:#e11d48;--accent2:#f97316;--ok:#16a34a;--warn:#d97706;--danger:#dc2626}
+[data-theme="gold"]{--bg:#fdfcf8;--bg-glow:rgba(217,119,6,.07);--card:#ffffff;--line:#f3e6c8;--ink:#3b2a10;--muted:#7c5a20;--accent:#d97706;--accent2:#f59e0b;--ok:#15803d;--warn:#b45309;--danger:#b91c1c}
+[data-theme="ocean"]{--bg:#f4fbfe;--bg-glow:rgba(2,132,199,.08);--card:#ffffff;--line:#dcebf8;--ink:#052038;--muted:#3b6d88;--accent:#0284c7;--accent2:#22d3ee;--ok:#059669;--warn:#d97706;--danger:#dc2626}
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);min-height:100vh}
-.glass-orbs{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.glass-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.45;animation:orb-float 18s ease-in-out infinite alternate}
-.glass-orb-1{width:50vw;height:50vh;top:-10%;left:-5%;background:#0089c966}
-.glass-orb-2{width:40vw;height:45vh;bottom:-5%;right:-5%;background:#00a88359}
-.glass-orb-3{width:35vw;height:35vh;top:30%;left:40%;background:#b37ed84d}
-@keyframes orb-float{0%{transform:translate(0) scale(1)}50%{transform:translate(8%,12%) scale(1.1)}to{transform:translate(-5%,8%) scale(.95)}}
-.app{max-width:1280px;margin:0 auto;padding:24px 14px 64px}
-header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 18px;flex-wrap:wrap;gap:10px}
-header h1{font-size:22px;font-weight:700;margin:0;letter-spacing:.2px}
+body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;background-image:radial-gradient(1100px 560px at 50% -12%,var(--bg-glow),transparent 60%);background-repeat:no-repeat;-webkit-font-smoothing:antialiased}
+.glass-orbs{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;opacity:.5}
+.glass-orb{position:absolute;border-radius:50%;filter:blur(90px);animation:orb-float 20s ease-in-out infinite alternate}
+.glass-orb-1{width:44vw;height:44vh;top:-8%;left:-4%;background:var(--bg-glow)}
+.glass-orb-2{width:36vw;height:40vh;bottom:-8%;right:-6%;background:var(--bg-glow);animation-delay:-6s}
+.glass-orb-3{width:28vw;height:32vh;top:36%;left:40%;background:var(--bg-glow);animation-delay:-12s}
+@keyframes orb-float{0%{transform:translate(0) scale(1)}50%{transform:translate(8%,12%) scale(1.08)}to{transform:translate(-5%,8%) scale(.95)}}
+.app{max-width:1280px;margin:0 auto;padding:28px 16px 64px}
+header{position:sticky;top:12px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;margin:0 0 22px;border-radius:16px;background:color-mix(in srgb,var(--card) 78%,transparent);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.03),0 8px 30px rgba(0,0,0,.04)}
+header h1{font-size:19px;font-weight:700;margin:0;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.logo-dot{width:11px;height:11px;border-radius:3.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 14px var(--accent);display:inline-block}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{padding:8px 10px;border:none;border-radius:8px;color:var(--muted);background:transparent;cursor:pointer;font-size:16px;transition:color .15s,background .15s}
-.btn:hover{color:var(--ink);background:rgba(0,0,0,.04)}
-.btn-tr{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--muted);cursor:pointer;font-size:14px;font-weight:500;box-shadow:var(--shadow);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
-.btn-tr:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.12);color:var(--ink)}
-.btn-tr:active{transform:translateY(0) scale(.96)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:none;border-radius:10px;color:var(--muted);background:transparent;cursor:pointer;font-size:15px;transition:color .15s,background .15s}
+.btn:hover{color:var(--ink);background:rgba(0,0,0,.05)}
+.btn-tr{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.btn-tr:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.10);color:var(--ink)}
+.btn-tr:active{transform:translateY(0) scale(.97)}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1),0 6px 16px color-mix(in srgb,var(--accent) 35%,transparent);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 45%,transparent)}
+.btn-primary:active{transform:translateY(0) scale(.97)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
-.stat{transition:transform .2s ease,box-shadow .2s ease}
-.stat:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.10)}
-.stat .label{font-size:12px;color:var(--muted);letter-spacing:.3px}
-.stat .value{font-size:22px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}
+.stat::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bar-a,var(--accent)),var(--bar-b,transparent));opacity:.85}
+.stat .label{font-size:12px;color:var(--muted);letter-spacing:.02em;font-weight:500;padding:18px 20px 0}
+.stat .value{font-size:24px;font-weight:700;margin:6px 20px 18px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
 .kpi-green{color:var(--ok)}.kpi-blue{color:var(--accent)}.kpi-orange{color:var(--warn)}.kpi-red{color:var(--danger)}
-.table-wrap{overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:18px}
+.table-wrap{overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:20px;transition:box-shadow .25s ease}
+.table-wrap:hover{box-shadow:0 12px 36px rgba(0,0,0,.07)}
 table{width:100%;border-collapse:collapse;min-width:1100px}
-th,td{text-align:left;padding:12px 12px;border-bottom:1px solid var(--line);color:var(--muted);font-size:14px;vertical-align:middle;white-space:nowrap}
-th{color:var(--ink);font-weight:600;position:sticky;top:0;z-index:1}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);color:var(--muted);font-size:13.5px;vertical-align:middle;white-space:nowrap}
+th{color:var(--ink);font-weight:600;background:var(--card);position:sticky;top:0;z-index:2}
 tbody tr{transition:background .12s ease}
-tbody tr:hover{background:rgba(0,0,0,.03)}
-.cand-name{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--ink)}
-.cand-rank{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:7px;background:color-mix(in oklch,var(--accent) 14%,transparent);color:var(--accent);font-size:12px;font-weight:700}
+tbody tr:hover{background:rgba(0,0,0,.02)}
+.cand-name{display:inline-flex;align-items:center;gap:10px;font-weight:600;color:var(--ink)}
+.cand-rank{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:22px;border-radius:7px;font-size:12px;font-weight:700;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
 .vote-val{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
-.chart{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:18px}
-.chart-header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-.empty{text-align:center;padding:24px;color:var(--muted)}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:20px;transition:box-shadow .25s ease}
+.chart:hover{box-shadow:0 16px 40px rgba(0,0,0,.07)}
+.chart-header{display:flex;gap:12px;padding:0 2px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.chart-title{font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.empty{text-align:center;padding:28px;color:var(--muted);font-weight:500}
 .muted{color:var(--muted)}
-.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.tab{padding:8px 14px;border:1px solid var(--line);background:var(--card);border-radius:999px;cursor:pointer;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px;transition:all .18s }
-.tab:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
-.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent));color:#fff;border-color:var(--accent);box-shadow:0 4px 14px rgba(64,158,255,.3)}
-.tab-desc{font-size:11px;opacity:.85}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
-.modal{background:#fff;border-radius:12px;padding:18px;width:min(420px,92vw);box-shadow:0 10px 30px rgba(0,0,0,.15)}
-.modal h3{margin:0 0 12px}
-.modal .field{margin-bottom:10px}
+.tabs{display:inline-flex;gap:4px;margin-bottom:14px;padding:4px;background:color-mix(in srgb,var(--bg) 55%,transparent);border:1px solid var(--line);border-radius:12px}
+.tab{padding:7px 14px;border:none;border-radius:9px;background:transparent;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .18s}
+.tab:hover{color:var(--ink)}
+.tab.active{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tab-desc{font-size:11px;opacity:.6}
+footer{text-align:center;color:var(--muted);font-size:12px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;width:min(460px,94vw);box-shadow:0 24px 60px rgba(0,0,0,.2);color:var(--ink)}
+.modal h3{margin:0 0 16px;font-size:18px;letter-spacing:-.02em}
+.modal .field{margin-bottom:16px}
+.modal label{font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:6px}
+.modal input,.modal select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:14px;width:100%;outline:none}
+.modal input:focus,.modal select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.delta{font-weight:600;font-variant-numeric:tabular-nums}
 .delta-up{color:var(--danger)}.delta-down{color:var(--ok)}.delta-flat{color:var(--muted)}
-.hidden{display:none !important}
-
+.hidden{display:none!important}
 .candidate-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.candidate-wrap label{font-size:13px;color:var(--muted)}
-.candidate-wrap select{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--ink);font-size:14px;min-width:180px;cursor:pointer}
-.chart-hint{font-size:12px;color:var(--muted)}
+.candidate-wrap label{font-size:13px;color:var(--muted);font-weight:600}
+.candidate-wrap select{padding:8px 12px;border:1px solid var(--line);background:var(--card);border-radius:10px;color:var(--ink);font-size:14px;min-width:190px;cursor:pointer}
+.chart-hint{font-size:12.5px;color:var(--muted)}
+.sel{padding:8px 14px;border:1px solid var(--line);background:var(--card);border-radius:10px;color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .placeholder{opacity:.25}
-</style>
 </head>
 <body>
+</style>
 <div class="glass-orbs" aria-hidden="true">
   <div class="glass-orb glass-orb-1"></div>
   <div class="glass-orb glass-orb-2"></div>
@@ -107,27 +118,27 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
 </div>
 <div class="app">
   <header>
-    <h1 class="flex items-center gap-2! text-2xl! font-bold! bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">📊 <span>Bili Vote Tracker</span></h1>
+    <h1><span class="logo-dot"></span><span>Bili Vote Tracker</span></h1>
     <div style="display:flex;align-items:center;gap:6px">
-      <select id="themeSelect" onchange="setTheme(this.value)" title="主题" class="border! border-line! bg-card! text-ink! rounded-xl2! px-3! py-2! text-sm! cursor-pointer! shadow-card!">
+      <select id="themeSelect" onchange="setTheme(this.value)" title="主题" class="sel">
         <option value="emerald">Emerald</option>
         <option value="midnight">Midnight</option>
         <option value="ruby">Ruby</option>
         <option value="gold">Gold</option>
         <option value="ocean">Ocean</option>
       </select>
-      <button class="btn btn-tr" id="btnTrigger" onclick="openAdmin()" title="管理后台"><span>🔐</span> 管理</button>
+      <button class="btn btn-primary" id="btnTrigger" onclick="openAdmin()" title="管理后台"><span>🔐</span><span>管理</span></button>
     </div>
   </header>
 
   <div class="stats">
-    <div class="card stat" style="border-left:3px solid var(--ink)"><div class="label">候选人</div><div class="value" id="s_candidates"><span class="skeleton">加载中</span></div></div>
-    <div class="card stat" style="border-left:3px solid var(--accent)"><div class="label">总采集数</div><div class="value kpi-blue" id="s_count"><span class="skeleton">--</span></div></div>
-    <div class="card stat" style="border-left:3px solid var(--warn)"><div class="label">最高票数</div><div class="value kpi-orange" id="s_max"><span class="skeleton">--</span></div></div>
-    <div class="card stat" style="border-left:3px solid var(--ok)"><div class="label">最近采集</div><div class="value kpi-green" id="s_latest"><span class="skeleton">--</span></div></div>
+    <div class="card stat" style="--bar-a:#71717a;--bar-b:transparent"><div class="label">候选人</div><div class="value" id="s_candidates"><span class="skeleton">加载中</span></div></div>
+    <div class="card stat" style="--bar-a:var(--accent);--bar-b:var(--accent2)"><div class="label">总采集数</div><div class="value kpi-blue" id="s_count"><span class="skeleton">--</span></div></div>
+    <div class="card stat" style="--bar-a:var(--warn);--bar-b:transparent"><div class="label">最高票数</div><div class="value kpi-orange" id="s_max"><span class="skeleton">--</span></div></div>
+    <div class="card stat" style="--bar-a:var(--ok);--bar-b:transparent"><div class="label">最近采集</div><div class="value kpi-green" id="s_latest"><span class="skeleton">--</span></div></div>
   </div>
 
-  <div class="table-wrap hover:shadow-lift! transition-shadow! duration-300!">
+  <div class="table-wrap">
     <table>
       <thead>
         <tr style="background:linear-gradient(180deg,var(--banner-from),var(--banner-to))">
@@ -147,12 +158,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
   </div>
 
   <div id="chartArea">
-    <div class="chart hover:shadow-lift! transition-shadow! duration-300!">
+    <div class="chart">
     <div class="chart-header">
-      <h3 style="margin:0" class="flex items-center gap-2! text-lg! font-bold!">📈 统计图表</h3>
+      <h3 class="chart-title">📈 统计图表</h3>
       <div class="candidate-wrap">
         <label for="chartCandidate">候选人：</label>
-        <select id="chartCandidate" onchange="onCandChange()" class="border! border-line! bg-card! text-ink! rounded-xl2! px-3! py-2! text-sm! cursor-pointer! shadow-card!">
+        <select id="chartCandidate" onchange="onCandChange()" class="sel">
           <option value="">- 加载中 -</option>
         </select>
       </div>
@@ -160,8 +171,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
       <label style="font-size:13px;color:var(--muted);margin-left:8px;display:flex;align-items:center;gap:6px">
         <input type="checkbox" id="rangeMode" onchange="drawChart()"> 按时间段查询
       </label>
-      <input type="datetime-local" id="rangeStart" onchange="onRangeChange()" class="border! border-line! bg-card! text-ink! rounded-lg! px-2! py-1.5! text-sm!">
-      <input type="datetime-local" id="rangeEnd" onchange="onRangeChange()" class="border! border-line! bg-card! text-ink! rounded-lg! px-2! py-1.5! text-sm!">
+      <input type="datetime-local" id="rangeStart" onchange="onRangeChange()" class="sel">
+      <input type="datetime-local" id="rangeEnd" onchange="onRangeChange()" class="sel">
     </div>
     <div class="tabs">
       <button class="tab active" onclick="setChartMode('trend', this)">📈 趋势线<span class="tab-desc">随时间的票数走势</span></button>
@@ -193,29 +204,29 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
     <span>Theme by <a href="#" style="color:#606266;text-decoration:none;font-weight:500">Nekomini</a></span>
   </footer>
 <div class="modal-backdrop" id="adminModal">
-  <div class="modal" style="background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+  <div class="modal">
     <h3 style="margin:0 0 12px;font-size:18px">🔐 管理员后台</h3>
     <div class="field">
       <label>账号</label>
-      <input id="adUser" type="text" class="w-full! border! border-line! bg-bg! text-ink! rounded-xl2! px-3! py-2! text-sm! outline-none! focus:ring-2! focus:ring-accent! transition! mt-1!" />
+      <input id="adUser" type="text" />
     </div>
     <div class="field">
       <label>密码</label>
-      <input id="adPass" type="password" class="w-full! border! border-line! bg-bg! text-ink! rounded-xl2! px-3! py-2! text-sm! outline-none! focus:ring-2! focus:ring-accent! transition! mt-1!" />
+      <input id="adPass" type="password" />
     </div>
     <div class="field" style="display:flex;gap:8px;align-items:center">
-      <button class="btn btn-tr" id="adSave" onclick="adminSave()">登录并加载配置</button>
+      <button class="btn btn-primary" id="adSave" onclick="adminSave()">登录并加载配置</button>
       <button class="btn" onclick="closeAdmin()">关闭</button>
       <span class="muted" id="adStatus" style="margin-left:6px"></span>
     </div>
     <div id="adSettings" class="hidden" style="margin-top:10px">
       <div class="field">
         <label>目标页面</label>
-        <input id="cfgUrl" placeholder="https://b23.tv/..." class="w-full! border! border-line! bg-bg! text-ink! rounded-xl2! px-3! py-2! text-sm! outline-none! focus:ring-2! focus:ring-accent! transition! mt-1!" />
+        <input id="cfgUrl" placeholder="https://b23.tv/..." />
       </div>
       <div class="field">
         <label>采集间隔</label>
-        <select id="cfgPreset" onchange="onPreset()" class="border! border-line! bg-card! text-ink! rounded-xl2! px-3! py-2! text-sm! cursor-pointer! w-full! mt-1!">
+        <select id="cfgPreset" onchange="onPreset()">
           <option value="1">每 1 分钟</option>
           <option value="5">每 5 分钟</option>
           <option value="10">每 10 分钟</option>
@@ -225,10 +236,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
       </div>
       <div class="field">
         <label>自定义间隔（分钟）</label>
-        <input id="cfgCustom" type="number" min="1" max="1440" value="1" class="w-full! border! border-line! bg-bg! text-ink! rounded-xl2! px-3! py-2! text-sm! outline-none! focus:ring-2! focus:ring-accent! transition! mt-1!" />
+        <input id="cfgCustom" type="number" min="1" max="1440" value="1" />
       </div>
       <div class="field" style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-tr" onclick="adminSaveConfig()">应用配置</button>
+        <button class="btn btn-primary" onclick="adminSaveConfig()">应用配置</button>
         <span class="muted" id="cfgStatus" style="margin-left:6px"></span>
       </div>
       <div class="muted" style="margin-top:6px;font-size:12px">保存后将立即生效。</div>
@@ -523,7 +534,7 @@ async function drawChart(){
       const delta = prev !== null ? p.votes - prev : null;
       const deltaStr = delta !== null ? ((delta>=0?'+':'')+fmt(delta)) : '-';
       const deltaClass = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
-      return `<tr><td>${i+1}</td><td>${dateFmt(p.captured_at)}</td><td><b>${fmt(p.votes)}</b></td><td class="${deltaClass}">${deltaStr}</td></tr>`;
+      return `<tr><td>${i+1}</td><td>${dateFmt(p.captured_at)}</td><td><b class="vote-val">${fmt(p.votes)}</b></td><td class="${deltaClass} delta">${deltaStr}</td></tr>`;
     }).join('');
     }
   }catch(e){
