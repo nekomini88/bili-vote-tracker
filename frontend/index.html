@@ -73,13 +73,6 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:16px 0 8px}
         <option value="ruby">Ruby</option>
         <option value="gold">Gold</option>
         <option value="ocean">Ocean</option>
-        <option value="sunrise">Sunrise</option>
-        <option value="green-mountain">Green Mountain</option>
-        <option value="blue-water">Blue Water</option>
-        <option value="night">Night</option>
-        <option value="material-indigo">Indigo</option>
-        <option value="material-pink">Pink</option>
-        <option value="material-teal">Teal</option>
       </select>
       <button class="btn" id="btnTrigger" onclick="openAdmin()" title="管理后台">🔐</button>
     </div>
@@ -300,7 +293,8 @@ async function load() {
     if(!latestCache.length){
       tb.innerHTML = '<tr><td colspan="9" class="empty">暂无数据</td></tr>';
     } else {
-      tb.innerHTML = latestCache.slice().sort(rankSort).map((x,idx)=> `<tr>
+      const sorted = latestCache.slice().sort(rankSort);
+      tb.innerHTML = sorted.map((x,idx)=> `<tr>
         <td>${idx+1}</td>
         <td><b>${x.title||''}</b></td>
         <td><b class="kpi-blue">${fmt(x.votes)}</b></td>
@@ -311,17 +305,18 @@ async function load() {
         <td class="muted" id="d24h_${idx}">-</td>
         <td>${dateFmt(x.captured_at)}</td>
       </tr>`).join('');
-      for(let i=0;i<latestCache.length;i++){
-        try{
-          const x = latestCache.slice().sort(rankSort)[i];
-          const j = await api(`/api/diff?title=${encodeURIComponent(x.title)}`);
-          const update = (id, v) => { const el = document.getElementById(id); if(el) el.innerHTML = v; };
-          update(`d1m_${i}`, fmtDelta((j && j.intervals && j.intervals['1m'] ? j.intervals['1m'].delta : null)));
-          update(`d5m_${i}`, fmtDelta((j && j.intervals && j.intervals['5m'] ? j.intervals['5m'].delta : null)));
-          update(`d30m_${i}`, fmtDelta((j && j.intervals && j.intervals['30m'] ? j.intervals['30m'].delta : null)));
-          update(`d6h_${i}`, fmtDelta((j && j.intervals && j.intervals['6h'] ? j.intervals['6h'].delta : null)));
-          update(`d24h_${i}`, fmtDelta((j && j.intervals && j.intervals['24h'] ? j.intervals['24h'].delta : null)));
-        }catch(e){}
+      // 并行拉取所有候选人的 diff，避免串行等待拖慢刷新
+      const diffs = await Promise.all(
+        sorted.map(x => api(`/api/diff?title=${encodeURIComponent(x.title)}`).catch(() => null))
+      );
+      for(let i=0;i<sorted.length;i++){
+        const j = diffs[i] || {};
+        const update = (id, v) => { const el = document.getElementById(id); if(el) el.innerHTML = v; };
+        update(`d1m_${i}`, fmtDelta((j.intervals && j.intervals['1m']) ? j.intervals['1m'].delta : null));
+        update(`d5m_${i}`, fmtDelta((j.intervals && j.intervals['5m']) ? j.intervals['5m'].delta : null));
+        update(`d30m_${i}`, fmtDelta((j.intervals && j.intervals['30m']) ? j.intervals['30m'].delta : null));
+        update(`d6h_${i}`, fmtDelta((j.intervals && j.intervals['6h']) ? j.intervals['6h'].delta : null));
+        update(`d24h_${i}`, fmtDelta((j.intervals && j.intervals['24h']) ? j.intervals['24h'].delta : null));
       }
     }
     statsCache = stats || {};
@@ -546,7 +541,7 @@ function api(path, opts={}) {
 (function init(){
   try{
     const saved = localStorage.getItem('theme');
-    const preferred = ['emerald','midnight','ruby','gold','ocean','sunrise','green-mountain','blue-water','night','material-indigo','material-pink','material-teal'].includes(saved) ? saved : 'emerald';
+    const preferred = ['emerald','midnight','ruby','gold','ocean'].includes(saved) ? saved : 'emerald';
     setTheme(preferred);
   }catch(e){ setTheme('emerald'); }
 })();

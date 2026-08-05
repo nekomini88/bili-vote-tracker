@@ -118,18 +118,22 @@ def poll_and_save():
                 (now, row["title"], row["votes"], row["item_id"], row["is_vote"]))
     print(f"[poll] saved {len(rows)} candidates at {now}")
 
+_scheduler = None
+
 def get_or_create_job():
-    job_id = "bili_vote_job"
-    scheduler = BackgroundScheduler()
+    """单例 scheduler：只在首次创建，后续仅重建 job，避免重复轮询。"""
+    global _scheduler, POLL_INTERVAL
+    if _scheduler is None:
+        _scheduler = BackgroundScheduler()
+        _scheduler.start()
     try:
-        job = scheduler.get_job(job_id)
+        job = _scheduler.get_job("bili_vote_job")
         if job:
             job.remove()
     except Exception:
         pass
-    scheduler.add_job(poll_and_save, "interval", minutes=POLL_INTERVAL, next_run_time=datetime.now(UTC8), id=job_id)
-    scheduler.start()
-    return scheduler
+    _scheduler.add_job(poll_and_save, "interval", minutes=POLL_INTERVAL, next_run_time=datetime.now(UTC8), id="bili_vote_job")
+    return _scheduler
 
 scheduler = get_or_create_job()
 
@@ -176,15 +180,17 @@ def list_records(limit: int = 200):
 
 @app.get("/api/latest")
 def latest():
+    """每个候选人取最近一条记录，保证所有候选人都返回。"""
     with sqlite3.connect(DB_PATH) as con:
-        cur = con.execute("SELECT title, votes, captured_at, item_id, is_my_vote FROM vote_records ORDER BY captured_at DESC LIMIT 100")
+        cur = con.execute(
+            "SELECT title, votes, captured_at, item_id, is_my_vote "
+            "FROM vote_records r "
+            "WHERE captured_at = (SELECT MAX(captured_at) FROM vote_records r2 WHERE r2.title = r.title) "
+            "ORDER BY title"
+        )
         rows = cur.fetchall()
-    out = {}
-    for r in rows:
-        title, votes, ts, item_id, is_my_vote = r
-        if title not in out:
-            out[title] = {"title": title, "votes": votes, "captured_at": ts, "item_id": item_id, "is_my_vote": is_my_vote}
-    return list(out.values())
+    cols = ["title", "votes", "captured_at", "item_id", "is_my_vote"]
+    return [dict(zip(cols, r)) for r in rows]
 
 @app.get("/api/history")
 def history(title: str, limit: int = 300):
@@ -268,34 +274,33 @@ def trigger_once(username: str = Depends(admin_auth)):
 def healthz():
     return {"ok": True}
 
-_CACHE_GEO = {"ts": 0, "data": {}}
-_SUCCESS_RESPONSE = {"ok": True}
+_GEO_CACHE = {}  # ip -> {"ts": int, "data": dict}
 
 @app.get("/api/my-info")
 def my_info(request: Request):
     ip = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip() or (request.client.host if request.client else "")
     ip = (ip or "").strip()
     now = int(time.time())
-    data = dict(_CACHE_GEO["data"])
     if not ip:
-        data.update({"ip": "", "country": "", "city": ""})
-        return data
-    if data.get("ip") != ip or now - _CACHE_GEO["ts"] > 60:
-        try:
-            r = requests.get(f"https://ipapi.co/{ip}/json/", timeout=5)
-            if r.status_code == 200:
-                j = r.json()
-                data.update({
-                    "ip": j.get("ip", ip),
-                    "country": j.get("country_name", ""),
-                    "city": j.get("city", ""),
-                })
-            else:
-                data.update({"ip": ip, "country": "", "city": ""})
-        except Exception:
-            data.update({"ip": ip, "country": "", "city": ""})
-        _CACHE_GEO["ts"] = now
-        _CACHE_GEO["data"] = dict(data)
+        return {"ip": "", "country": "", "city": ""}
+    entry = _GEO_CACHE.get(ip)
+    if entry and now - entry["ts"] <= 60:
+        return dict(entry["data"])
+    data = {"ip": ip, "country": "", "city": ""}
+    try:
+        r = requests.get(f"https://ipapi.co/{ip}/json/", timeout=5)
+        if r.status_code == 200:
+            j = r.json()
+            data.update({
+                "ip": j.get("ip", ip),
+                "country": j.get("country_name", ""),
+                "city": j.get("city", ""),
+            })
+    except Exception:
+        pass
+    _GEO_CACHE[ip] = {"ts": now, "data": dict(data)}
+    if len(_GEO_CACHE) > 256:  # 防止无限增长
+        _GEO_CACHE.clear()
     return data
 
 app.mount("/", StaticFiles(directory="/app/frontend", html=True), name="frontend")
