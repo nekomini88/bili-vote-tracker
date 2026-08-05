@@ -68,10 +68,11 @@ const HERO_IDS = {
     return s ? new Date(s).toLocaleString() : '-';
   }
 
-  // 候选人全名 → 头像资源路径（无映射返回 ''）
+  // 候选人全名 → 头像资源路径（无映射返回 ''）；?v= 用于 cache-bust（发版时更新）
+  const ASSET_VERSION = "1.1.2";
   function heroSrc(t) {
     const n = HERO_IDS[String(t || '').replace('奥特曼', '')];
-    return n ? `/assets/heroes/ultraman_${String(n).padStart(2, '0')}.png` : '';
+    return n ? `/assets/heroes/ultraman_${String(n).padStart(2, '0')}.png?v=${ASSET_VERSION}` : '';
   }
 
   // 排序：票数从大到小；票数相同按中文名 localeCompare 稳定排序
