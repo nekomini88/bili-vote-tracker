@@ -1,0 +1,106 @@
+# Bili Vote Tracker 🗳️
+
+奥特曼人气投票实时监控面板 —— 抓取 Bilibili 活动投票数据，实时展示 20 位奥特曼候选人的票数、各时段增量与趋势图表，自带主题切换与地域/浏览器信息条。
+
+## ✨ 功能特性
+
+- **实时轮询采集**：后台定时从 Bilibili 投票活动抓取候选人票数并落库（SQLite）
+- **候选人主表**：20 位奥特曼固定排序（迪迦 → 梦比优斯 → 雷欧 → … → 麦克斯），显示当前票数 + 1m/5m/30m/6h/24h 环比增量
+- **多维图表**：
+  - 📈 趋势线（票数随时间走势）
+  - 📊 票数对比（当前各候选人票数）
+  - 📉 增量柱状（每轮采集的票数增量）
+  - 支持「按时间段查询」自定义起止区间
+- 🎨 多主题：Emerald / Midnight / Ruby / Gold / Ocean，本地记忆切换
+- 🌍 地域 Footer：国旗 + 国家 · 城市 · IP · 浏览器，点击展开，随 30s 自动刷新
+- 🔐 管理员后台：登录后可修改目标地址与采集间隔（HTTP Basic Auth）
+
+## 🚀 快速开始
+
+### 前置要求
+
+- Docker & Docker Compose
+- 一个 Bilibili 投票活动（`b23.tv` 短链或页面 URL）
+
+### 运行
+
+```bash
+docker compose up -d --build
+```
+
+访问 `http://<host>:9008`。
+
+## ⚙️ 配置
+
+服务通过环境变量配置（`docker-compose.yml`）：
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `PORT` | `9008` | 服务端口 |
+| `TARGET_URL` | `https://b23.tv/wDz5Xnc` | 目标活动页短链 |
+| `DB_PATH` | `/app/db/votes.db` | SQLite 数据库路径 |
+| `POLL_INTERVAL` | `1` | 轮询间隔（分钟） |
+| `ADMIN_USER` | `admin` | 管理后台账号 |
+| `ADMIN_PASS` | `nekomini` | 管理后台密码 |
+
+> 后台配置也可运行时在线修改，保存后立即生效。
+
+## 🔌 API
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/api/latest` | GET | 所有候选人的最新票数（每候选人一条） |
+| `/api/history?title=<候选人>` | GET | 单个候选人的票数历史 |
+| `/api/range?title&start&end` | GET | 指定时间范围的历史 |
+| `/api/diff?title=` | GET | 1m/5m/30m/6h/24h 环比增量 |
+| `/api/stats` | GET | 总采集数、最高票、均值、候选人数等 |
+| `/api/config` | GET/POST | 读取 / 更新配置（需 Basic Auth） |
+| `/api/trigger` | GET | 手动触发一次采集（需 Basic Auth） |
+| `/api/my-info` | GET | 请求者 IP 地域信息（按 IP 缓存） |
+| `/healthz` | GET | 健康检查 |
+
+## 🗂️ 项目结构
+
+```
+bili-vote-tracker/
+├── backend/
+│   └── app.py            # FastAPI 后端：采集调度 + 数据 API
+├── frontend/
+│   ├── index.html        # 单页前端（内联 CSS/JS）
+│   ├── assets/heroes/    # 20 位奥特曼头图
+│   └── generate_heroes.py# 头图生成脚本
+├── db/
+│   └── votes.db          # SQLite（gitignore，不入库）
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── VERSION               # 版本号（镜像内暴露）
+```
+
+## 🛠️ 技术栈
+
+- **后端**：FastAPI + Uvicorn + APScheduler + SQLite
+- **前端**：原生 HTML/CSS/JS + Canvas 图表
+- **部署**：Docker Compose
+
+## 📈 数据说明
+
+- 候选人为 20 位奥特曼，前端 `CANDIDATE_ORDER` 固定排序，新候选排在末尾
+- `captured_at` 使用 UTC+8 本地时间，秒级精度
+- 同秒重复写入通过 `INSERT OR IGNORE` + `idx_vote_records_unique` 唯一索引去重
+
+## 🔧 开发与调试
+
+本地构建验证：
+
+```bash
+python3 -m py_compile backend/app.py   # 后端语法检查
+docker compose up -d --build           # 重建部署
+curl http://127.0.0.1:9008/healthz     # 健康检查
+```
+
+> 完整的调试与架构教训见 Hermes 技能 `bili-vote-tracker-debug`（scheduler 单例、/api/latest 子查询、Geo 按 IP 缓存、前端 diff 并行化、主题对齐）。
+
+## 📄 License
+
+[MIT](LICENSE)
