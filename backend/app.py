@@ -326,3 +326,18 @@ def my_info(request: Request):
     return data
 
 app.mount("/", StaticFiles(directory="/app/frontend", html=True), name="frontend")
+
+
+@app.middleware("http")
+async def no_cache(request, call_next):
+    """禁用浏览器缓存，确保用户始终拿到最新前端（避免 logic.js 等修复后 304 复用旧页）"""
+    response = await call_next(request)
+    path = request.url.path
+    if path.endswith(".html") or path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    else:
+        # 静态资源（js/css/png）允许短缓存 + 必须 revalidate
+        response.headers.setdefault("Cache-Control", "no-cache")
+    return response
