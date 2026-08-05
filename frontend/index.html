@@ -398,11 +398,13 @@ async function load() {
       for(let i=0;i<sorted.length;i++){
         const j = diffs[i] || {};
         const update = (id, v) => { const el = document.getElementById(id); if(el) el.innerHTML = v; };
-        update(`d1m_${i}`, fmtDelta((j.intervals && j.intervals['1m']) ? j.intervals['1m'].delta : null));
-        update(`d5m_${i}`, fmtDelta((j.intervals && j.intervals['5m']) ? j.intervals['5m'].delta : null));
-        update(`d30m_${i}`, fmtDelta((j.intervals && j.intervals['30m']) ? j.intervals['30m'].delta : null));
-        update(`d6h_${i}`, fmtDelta((j.intervals && j.intervals['6h']) ? j.intervals['6h'].delta : null));
-        update(`d24h_${i}`, fmtDelta((j.intervals && j.intervals['24h']) ? j.intervals['24h'].delta : null));
+        // 无历史对比点时视为 0（新候选人刚入库），比 '-' 更清晰
+        const dv = k => (j.intervals && j.intervals[k] && j.intervals[k].delta !== undefined) ? j.intervals[k].delta : 0;
+        update(`d1m_${i}`, fmtDelta(dv('1m')));
+        update(`d5m_${i}`, fmtDelta(dv('5m')));
+        update(`d30m_${i}`, fmtDelta(dv('30m')));
+        update(`d6h_${i}`, fmtDelta(dv('6h')));
+        update(`d24h_${i}`, fmtDelta(dv('24h')));
       }
     }
     statsCache = stats || {};
