@@ -7,15 +7,17 @@ const L = require('./assets/logic.js');
 // ---------- HERO_IDS / heroSrc ----------
 test('HERO_IDS 覆盖全部 46 位候选人', () => {
   assert.equal(Object.keys(L.HERO_IDS).length, 46, '应为 46 位候选映射');
-  assert.equal(L.HERO_IDS['迪迦'], 1);
-  assert.equal(L.HERO_IDS['纳伊斯'], 46);
+  assert.equal(L.HERO_IDS['迪迦'], 29);   // 按 item_id 稳定编号
+  assert.equal(L.HERO_IDS['泽塔'], 1);
+  assert.equal(L.HERO_IDS['纳伊斯'], 7);
 });
 
 test('heroSrc 返回正确头像路径（补零）', () => {
-  assert.equal(L.heroSrc('迪迦奥特曼'), '/assets/heroes/ultraman_01.png');
-  assert.equal(L.heroSrc('麦克斯奥特曼'), '/assets/heroes/ultraman_20.png');
-  assert.equal(L.heroSrc('奥特之王'), '/assets/heroes/ultraman_22.png');
-  assert.equal(L.heroSrc('纳伊斯奥特曼'), '/assets/heroes/ultraman_46.png');
+  assert.equal(L.heroSrc('迪迦奥特曼'), '/assets/heroes/ultraman_29.png');
+  assert.equal(L.heroSrc('麦克斯奥特曼'), '/assets/heroes/ultraman_45.png');
+  assert.equal(L.heroSrc('奥特之王'), '/assets/heroes/ultraman_03.png');
+  assert.equal(L.heroSrc('纳伊斯奥特曼'), '/assets/heroes/ultraman_07.png');
+  assert.equal(L.heroSrc('泽塔奥特曼'), '/assets/heroes/ultraman_01.png');
 });
 
 test('heroSrc 未知候选返回空串', () => {
@@ -25,7 +27,7 @@ test('heroSrc 未知候选返回空串', () => {
 });
 
 test('heroSrc 处理无"奥特曼"后缀的名字', () => {
-  assert.equal(L.heroSrc('迪迦'), '/assets/heroes/ultraman_01.png');
+  assert.equal(L.heroSrc('迪迦'), '/assets/heroes/ultraman_29.png');
 });
 
 // ---------- rankSort ----------
