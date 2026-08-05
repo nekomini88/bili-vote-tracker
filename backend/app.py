@@ -285,7 +285,7 @@ def stats():
         row = cur.fetchone()
         cur = con.execute("SELECT COUNT(DISTINCT title), MAX(captured_at), MIN(captured_at) FROM vote_records")
         meta = cur.fetchone()
-    return {"count": row[0], "max_votes": row[1], "min_votes": row[2], "avg_votes": round(row[3], 2) if row[3] else 0, "candidates": meta[0], "latest_capture": meta[1], "first_capture": meta[2]}
+    return {"count": row[0], "max_votes": row[1], "min_votes": row[2], "avg_votes": round(row[3], 2) if row[3] else 0, "candidates": meta[0], "latest_capture": meta[1], "first_capture": meta[2], "version": APP_VERSION}
 
 @app.get("/api/trigger")
 def trigger_once(username: str = Depends(admin_auth)):
@@ -294,7 +294,7 @@ def trigger_once(username: str = Depends(admin_auth)):
 
 @app.get("/healthz")
 def healthz():
-    return {"ok": True}
+    return {"ok": True, "version": APP_VERSION}
 
 _GEO_CACHE = {}  # ip -> {"ts": int, "data": dict}
 
