@@ -93,6 +93,22 @@ bili-vote-tracker/
 - `captured_at` 使用 UTC+8 本地时间，秒级精度
 - 同秒重复写入通过 `INSERT OR IGNORE` + `idx_vote_records_unique` 唯一索引(item_id) 去重
 
+## 🔬 测试
+
+### 单元测试（前端纯逻辑，Node 22+ 内置，零依赖）
+```bash
+node --test frontend/logic.test.js
+```
+覆盖：`HERO_IDS` 46 位映射、`heroSrc` 头像路径、`rankSort` 票数降序/中文稳定、`fmt` 千分位、`fmtDelta` 零值/正负、`countryCodeToFlag` 国旗。
+
+### API 集成测试（对运行中的容器端到端）
+```bash
+python3 tests/api_test.py
+```
+覆盖：`/healthz` 版本、`/api/stats` 版本、`/api/latest` 返回全部 46 位候选人、记录结构、`/api/diff` 真实增量、`/api/history`。
+
+> 测试发现并修复了 `countryCodeToFlag` 只生成单字符国旗的 bug。
+
 ## 🔧 开发与调试
 
 本地构建验证：
