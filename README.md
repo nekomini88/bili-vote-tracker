@@ -121,6 +121,24 @@ curl http://127.0.0.1:9008/healthz     # 健康检查
 
 > 完整的调试与架构教训见 Hermes 技能 `bili-vote-tracker-debug`（scheduler 单例、/api/latest 子查询、Geo 按 IP 缓存、前端 diff 并行化、pn 分页拉全、主题对齐）。
 
+## 🚀 发版流程
+
+版本号记录在 `VERSION` 文件（当前 `1.1.2`）。发版 = **git tag + gh release**：
+
+```bash
+# 1. 更新 VERSION 与代码并提交
+git add -A && git commit -m "v1.1.2: <变更说明>"
+
+# 2. 打 tag 并推送
+git tag v1.1.2
+git push origin main --tags
+
+# 3. 创建 GitHub Release
+gh release create v1.1.2 --title "v1.1.2" --notes "<变更说明>"
+```
+
+> 镜像由部署端 `docker compose up -d --build` 构建，无需推送镜像仓库；`VERSION` 文件会在容器内 `/healthz` 中暴露。
+
 ## 📄 License
 
 [MIT](LICENSE)
