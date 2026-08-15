@@ -9,6 +9,7 @@ import re
 from datetime import datetime, timezone, timedelta
 import time
 import requests
+import sys
 from apscheduler.schedulers.background import BackgroundScheduler
 
 DB_PATH = os.environ.get("DB_PATH", "/app/db/votes.db")
@@ -348,8 +349,9 @@ def _fetch_geo(ip):
                 "country": j.get("country_name", ""),
                 "city": j.get("city", ""),
             })
-    except Exception:
-        pass
+    except Exception as e:
+        # geo 查询失败 → 返回空字段 (记录原因便于排障)
+        print(f"⚠️ geo 查询失败 {ip}: {e}", file=sys.stderr)
     return data
 
 def _geo_lookup(ip, now):
