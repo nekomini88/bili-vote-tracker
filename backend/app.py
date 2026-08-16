@@ -17,6 +17,8 @@ ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
 ADMIN_PASS = os.environ.get("ADMIN_PASS", "nekomini")
 TARGET_URL = os.environ.get("TARGET_URL", "https://b23.tv/wDz5Xnc")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "1"))
+# 投票已终止: ENABLE_POLLING=false 时只保留页面/API, 停止轮询采集
+ENABLE_POLLING = os.environ.get("ENABLE_POLLING", "true").lower() in ("1", "true", "yes")
 UTC8 = timezone(timedelta(hours=8))
 APP_VERSION = Path("/app/VERSION").read_text().strip() if Path("/app/VERSION").exists() else "0.0.0"
 Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
@@ -173,6 +175,10 @@ def get_or_create_job():
     if _scheduler is None:
         _scheduler = BackgroundScheduler()
         _scheduler.start()
+    if not ENABLE_POLLING:
+        # 投票已终止: 不注册采集 job (页面/API 保留)
+        print("[poll] ENABLE_POLLING=false, 停止采集 (页面/API 保留)")
+        return _scheduler
     try:
         job = _scheduler.get_job("bili_vote_job")
         if job:
